@@ -1,0 +1,196 @@
+<UserControl x:Class="GOT.UI.Views.Options.OptionSecondLevelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:childControls="clr-namespace:GOT.UI.Views.Options.ChildControls"
+             mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style x:Key="GridStyle" BasedOn="{StaticResource DataGridStyle}" TargetType="{x:Type DataGrid}">
+            <EventSetter Event="PreviewKeyDown" Handler="PreviewKeyDownSetter" />
+        </Style>
+
+        <Style TargetType="DataGridRow" BasedOn="{StaticResource OptionRows}">
+            <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="CardsGrid" Background="{StaticResource MainGridBackground}">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="{Binding MenuItemHeader}" Command="{Binding ShowInfoCommand}" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" VerticalAlignment="Top" Height="50" Background="{StaticResource SecondaryColor}">
+
+            <Button x:Name="Add" Margin="0, 0, 300, 0"
+                    ToolTip="Добавить стратегию" Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding AddStrategyCommand}">
+                <Image Source="{StaticResource AddImage}" />
+            </Button>
+
+            <Button x:Name="Start" Margin="0,0, 250,0"
+                    ToolTip="Запустить стратегию" Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding StartStrategyCommand}">
+                <Image Source="{StaticResource StartImage}" />
+            </Button>
+            <Button x:Name="Stop" Margin="0, 0, 200,0"
+                    ToolTip="Остановить стратегию" Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding StopStrategyCommand}">
+                <Image Source="{StaticResource StopImage}" />
+            </Button>
+            <Button x:Name="ClosePosition" Margin="0, 0, 150, 0" BorderThickness="1.2"
+                    ToolTip="Закрыть позиции" Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding ClosePositionCommand}">
+                <TextBlock Text="Close" FontSize="14" FontFamily="Tahoma" Foreground="White" FontWeight="Heavy" />
+            </Button>
+            <Button x:Name="Delete" Margin="0, 0, 50, 0"
+                    ToolTip="Удалить стратегию" Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding DeleteStrategyCommand}">
+                <Image Source="{StaticResource DeleteImage}" />
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+            <DataGrid Name="GridItems" Style="{StaticResource GridStyle}" Margin="10,10,10,0"
+                      ItemsSource="{Binding StrategiesCollection}"
+                      SelectedItem="{Binding SelectedStrategy}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Состояние" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Source="{Binding StrategyState, Converter={StaticResource StrategyStatesImageConv}}"
+                                    Height="16" ToolTip="{Binding StrategyState}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Период распада" Binding="{Binding Lifetime}" />
+                    <DataGridTextColumn Header="Тип опциона" Binding="{Binding OptionType}" />
+                    <DataGridTextColumn Header="Инструмент" Binding="{Binding Instrument.FullName}" />
+                    <DataGridTextColumn Header="Страйк" Binding="{Binding Instrument.Strike}" />
+                    <DataGridTextColumn Header="Дата экспирации"
+                                        Binding="{Binding Instrument.ExpirationDate, StringFormat={}{0:dd/MM/yyyy}}" />
+                    <DataGridTextColumn Header="Объем" Binding="{Binding Volume}" />
+                    <DataGridTextColumn Header="Теор. цена" Binding="{Binding TheoreticalPrice}" />
+                    <DataGridTextColumn Header="Позиция" Binding="{Binding Position}" />
+                    <DataGridTextColumn Header="Pnl" Binding="{Binding Pnl}" />
+                    <DataGridTextColumn Header="$$-Pnl" Binding="{Binding PnlCurrency}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <Rectangle Grid.Row="2" Fill="{StaticResource MainColor}" Height="1" Margin="30,0,30,15"
+                   VerticalAlignment="Bottom" RadiusX="1" RadiusY="1" />
+
+        <Grid Grid.Row="3" Visibility="{Binding InfoVisible}" HorizontalAlignment="Left" Height="200"
+              Margin="10,0,10,0">
+            <Grid DataContext="{Binding SelectedStrategy}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Rectangle Fill="#FFF4F4F5" Stroke="#FF419FE1" RadiusX="5" RadiusY="5"
+                               Width="420" Height="180" HorizontalAlignment="Left" Margin="18,0,0,18">
+                        <Rectangle.Effect>
+                            <DropShadowEffect ShadowDepth="2" Color="{StaticResource RectangleShadowColor}" />
+                        </Rectangle.Effect>
+                    </Rectangle>
+
+                    <TextBlock Text="Информация о стратегии" Height="Auto" HorizontalAlignment="Left"
+                               VerticalAlignment="Top" Margin="34,4,0,0" Style="{StaticResource DetailCardsBlock}" />
+
+                    <Grid HorizontalAlignment="Left" Height="auto" Margin="36,30,0,0" VerticalAlignment="Top"
+                          Width="Auto">
+                        <Label Content="Направление:" VerticalAlignment="Top" FontSize="14"
+                               FontFamily="Tahoma" Margin="6,0,0,0" Width="100.36" HorizontalAlignment="Left" />
+                        <TextBlock HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"
+                                   Text="{Binding Direction}"
+                                   VerticalAlignment="Top" Width="Auto" FontFamily="Tahoma"
+                                   FontSize="14" Margin="120,5,-39.237,0" />
+                        <Path Data="M17.133333,71.65 C69.73758,66.559266 123.87899,67.383333 177.13333,67.383333"
+                              Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Stretch="Fill"
+                              Stroke="#FF419FE1" VerticalAlignment="Top" Width="100.93" Margin="24,26.9,0,0" />
+                    </Grid>
+                    <Grid HorizontalAlignment="Left" Height="auto" Margin="36,70,0,0" VerticalAlignment="Top"
+                          Width="Auto">
+                        <Label Content="Инстр.:" HorizontalAlignment="Left" VerticalAlignment="Top"
+                               FontSize="14" FontFamily="Tahoma" Margin="6,0,0,0" />
+                        <TextBlock HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"
+                                   Text="{Binding Instrument.Symbol}"
+                                   VerticalAlignment="Top" Width="Auto" FontFamily="Tahoma" FontSize="14"
+                                   Margin="120,5,0,0" Grid.ColumnSpan="2" />
+                        <Path Data="M17.133333,71.65 C69.73758,66.559266 123.87899,67.383333 177.13333,67.383333"
+                              Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Stretch="Fill"
+                              Stroke="#FF419FE1" VerticalAlignment="Top" Width="100.573" Margin="24,26.9,0,0" />
+                    </Grid>
+
+                    <Grid HorizontalAlignment="Left" Height="auto" Margin="36,110,0,0" VerticalAlignment="Top"
+                          Width="Auto">
+                        <Label Content="Объем:" HorizontalAlignment="Left" VerticalAlignment="Top"
+                               FontSize="14" FontFamily="Tahoma" Margin="6,0,0,0" />
+                        <TextBlock HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap" Text="{Binding Volume}"
+                                   VerticalAlignment="Top" Width="Auto"
+                                   FontFamily="Tahoma" FontSize="14" Margin="120,5,0,0" />
+                        <Path Data="M17.133333,71.65 C69.73758,66.559266 123.87899,67.383333 177.13333,67.383333"
+                              Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Stretch="Fill"
+                              Stroke="#FF419FE1" VerticalAlignment="Top" Width="100.573" Margin="24,26.9,0,0" />
+                    </Grid>
+
+                    <Grid HorizontalAlignment="Left" Height="auto" Margin="240,30,0,0" VerticalAlignment="Top"
+                          Width="Auto">
+                        <Label Content="Pnl:" VerticalAlignment="Top" FontSize="14" FontFamily="Tahoma"
+                               Margin="6,0,0,0" Width="100.36" HorizontalAlignment="Left" />
+                        <TextBlock HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap" Text="{Binding Pnl}"
+                                   VerticalAlignment="Top" Width="Auto" FontFamily="Tahoma" FontSize="14"
+                                   Margin="120,5,-39.237,0" />
+                        <Path Data="M17.133333,71.65 C69.73758,66.559266 123.87899,67.383333 177.13333,67.383333"
+                              Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Stretch="Fill" Stroke="#FF419FE1"
+                              VerticalAlignment="Top" Width="100.93" Margin="24,26.9,0,0" />
+                    </Grid>
+
+                    <Grid HorizontalAlignment="Left" Height="auto" Margin="240,70,0,0" VerticalAlignment="Top"
+                          Width="Auto">
+                        <Label Content="Ср. цена:" VerticalAlignment="Top" FontSize="14" FontFamily="Tahoma"
+                               Margin="6,0,0,0"
+                               Width="100.36" HorizontalAlignment="Left" />
+                        <TextBlock HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"
+                                   Text="{Binding AvgPrice}"
+                                   VerticalAlignment="Top" Width="Auto" FontFamily="Tahoma" FontSize="14"
+                                   Margin="120,5,-39.237,0" />
+                        <Path Data="M17.133333,71.65 C69.73758,66.559266 123.87899,67.383333 177.13333,67.383333"
+                              Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Stretch="Fill" Stroke="#FF419FE1"
+                              VerticalAlignment="Top" Width="100.93" Margin="24,26.9,0,0" />
+                    </Grid>
+
+                    <Grid HorizontalAlignment="Left" Height="auto" Margin="240,110,0,0" VerticalAlignment="Top"
+                          Width="Auto">
+                        <Label Content="Позиция:" VerticalAlignment="Top" FontSize="14" FontFamily="Tahoma"
+                               Margin="6,0,0,0" Width="100.36" HorizontalAlignment="Left" />
+                        <TextBlock HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"
+                                   Text="{Binding Position}"
+                                   VerticalAlignment="Top" Width="Auto" FontFamily="Tahoma" FontSize="14"
+                                   Margin="120,5,-39.237,0" />
+                        <Path Data="M17.133333,71.65 C69.73758,66.559266 123.87899,67.383333 177.13333,67.383333"
+                              Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Stretch="Fill" Stroke="#FF419FE1"
+                              VerticalAlignment="Top" Width="100.93" Margin="24,26.9,0,0" />
+                    </Grid>
+                </Grid>
+
+                <childControls:OptionOrdersInfoView Grid.Column="1" Margin="30, 0, 0, 18" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

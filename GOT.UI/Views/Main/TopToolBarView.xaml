@@ -1,0 +1,54 @@
+<UserControl x:Class="GOT.UI.Views.Main.TopToolBarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="55" d:DesignWidth="400">
+
+    <Border Height="32" BorderBrush="Gainsboro" Background="{StaticResource MainGridBackground}" BorderThickness="1"
+            Margin="1"
+            Padding="2">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+            <Button Command="{Binding ConnectCommand}" Margin="5,0,0,0" BorderBrush="{StaticResource MainColor}"
+                    Background="{StaticResource SecondaryColor}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <Image Source="{StaticResource DisconnectImage}" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ToolTip" Value="Установить соединение" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ConnectionState}" Value="Connected">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource ConnectImage}" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="ToolTip" Value="Разорвать соединение" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button x:Name="SettingsButton" Margin="5,0,0,0" BorderBrush="{StaticResource MainColor}"
+                    Background="{StaticResource SecondaryColor}"
+                    Command="{Binding SettingsCommand}" ToolTip="Общие настройки">
+                <Button.Content>
+                    <Image Source="{StaticResource SettingsImage}" />
+                </Button.Content>
+            </Button>
+            <Border BorderBrush="{StaticResource MainColor}" BorderThickness="2" CornerRadius="2"
+                    Background="{StaticResource SecondaryColor}" MinWidth="150"
+                    Margin="5,0,0,0">
+                <DockPanel>
+                    <TextBlock Text="Connector:" Style="{StaticResource MainInfoTextStyle}" />
+                    <TextBlock Text="{Binding Path=ConnectorType}"
+                               Style="{StaticResource MainInfoTextStyle}" />
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

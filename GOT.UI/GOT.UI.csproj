@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{571B12C8-AC77-43CF-BBC5-3C51A809D0FB}</ProjectGuid>
+        <OutputType>WinExe</OutputType>
+        <RootNamespace>GOT.UI</RootNamespace>
+        <AssemblyName>GOT.UI</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <WarningLevel>4</WarningLevel>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\..\Projects_NET\GOT\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>..\..\Projects_NET\GOT\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466">
+            <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
+            <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+          <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Windows.Forms" />
+        <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+          <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Xaml">
+            <RequiredTargetFramework>4.0</RequiredTargetFramework>
+        </Reference>
+        <Reference Include="WindowsBase" />
+        <Reference Include="PresentationCore" />
+        <Reference Include="PresentationFramework" />
+    </ItemGroup>
+    <ItemGroup>
+        <ApplicationDefinition Include="App.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <SubType>Designer</SubType>
+        </ApplicationDefinition>
+        <Compile Include="Common\BaseContainerViewModel.cs" />        
+        <Compile Include="ViewModels\Hedge\BaseHedgeLevelViewModel.cs" />
+        <Compile Include="ViewModels\Hedge\FirstLevelViewModel.cs" />
+        <Compile Include="ViewModels\Hedge\MainLevelViewModel.cs" />
+        <Compile Include="ViewModels\Hedge\SecondLevelViewModel.cs" />
+        <Compile Include="ViewModels\Hedge\ThirdLevelViewModel.cs" />
+        <Compile Include="ViewModels\Holders\HedgeHolderViewModel.cs" />
+        <Compile Include="ViewModels\Holders\OptionsHolderViewModel.cs" />
+        <Compile Include="ViewModels\MainViewModel.cs" />
+        <Compile Include="ViewModels\Option\BaseOptionLevelViewModel.cs" />
+        <Compile Include="ViewModels\Option\OptionFirstLevelViewModel.cs" />
+        <Compile Include="ViewModels\Option\OptionMainLevelViewModel.cs" />
+        <Compile Include="ViewModels\Option\OptionSecondLevelViewModel.cs" />
+        <Compile Include="ViewModels\Option\OptionThirdLevelViewModel.cs" />
+        <Compile Include="ViewModels\ShellViewModel.cs" />
+        <Compile Include="ViewModels\StatusPanelViewModel.cs" />
+        <Compile Include="ViewModels\TopToolBarViewModel.cs" />
+        <Compile Include="Views\FrameWindow.cs" />
+        <Compile Include="Views\ConfigurationWindow.xaml.cs">
+          <DependentUpon>ConfigurationWindow.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\ChildControls\HedgeContextMenu.xaml.cs">
+          <DependentUpon>HedgeContextMenu.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\ChildControls\HedgeOrdersInfoView.xaml.cs">
+          <DependentUpon>HedgeOrdersInfoView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\FirstLevelView.xaml.cs">
+          <DependentUpon>FirstLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\HedgeContainerView.xaml.cs">
+          <DependentUpon>HedgeContainerView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\MainLevelView.xaml.cs">
+          <DependentUpon>MainLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\SecondLevelView.xaml.cs">
+          <DependentUpon>SecondLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Hedges\ThirdLevelView.xaml.cs">
+          <DependentUpon>ThirdLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Main\MainShellView.xaml.cs">
+          <DependentUpon>MainShellView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Main\MainView.xaml.cs">
+          <DependentUpon>MainView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Main\StatusPanelView.xaml.cs">
+          <DependentUpon>StatusPanelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Main\TopToolBarView.xaml.cs">
+          <DependentUpon>TopToolBarView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Options\ChildControls\OptionOrdersInfoView.xaml.cs">
+          <DependentUpon>OptionOrdersInfoView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Options\OptionContainerView.xaml.cs">
+          <DependentUpon>OptionContainerView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Options\OptionFirstLevelView.xaml.cs">
+          <DependentUpon>OptionFirstLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Options\OptionMainLevelView.xaml.cs">
+          <DependentUpon>OptionMainLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Options\OptionSecondLevelView.xaml.cs">
+          <DependentUpon>OptionSecondLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Options\OptionThirdLevelView.xaml.cs">
+          <DependentUpon>OptionThirdLevelView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\PnlWindow.xaml.cs">
+            <DependentUpon>PnlWindow.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\StrategyMessageBox.xaml.cs">
+            <DependentUpon>StrategyMessageBox.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\SettingsViews\SettingsHedgeView.xaml.cs">
+          <DependentUpon>SettingsHedgeView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\SettingsViews\SettingsMainView.xaml.cs">
+          <DependentUpon>SettingsMainView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\SettingsViews\SettingsOptionView.xaml.cs">
+          <DependentUpon>SettingsOptionView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Adding\Strategies\AddMainStrategyView.xaml.cs">
+            <DependentUpon>AddMainStrategyView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Adding\Strategies\AddOptionStrategyView.xaml.cs">
+            <DependentUpon>AddOptionStrategyView.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Adding\Instruments\AddInstrument.xaml.cs">
+            <DependentUpon>AddInstrument.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="Views\Adding\Instruments\AddOptionInstrumentView.xaml.cs">
+            <DependentUpon>AddOptionInstrumentView.xaml</DependentUpon>
+        </Compile>
+        <Page Include="Dictionaries\GotDictionary.xaml" />
+        <Page Include="Dictionaries\GridItemsDictionary.xaml" />
+        <Page Include="Dictionaries\Images.xaml" />
+        <Page Include="Dictionaries\TemplateDictionary.xaml" />
+        <Page Include="MainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <SubType>Designer</SubType>
+        </Page>
+        <Compile Include="App.xaml.cs">
+            <DependentUpon>App.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Include="Properties\Settings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+            <DependentUpon>Settings.settings</DependentUpon>
+        </Compile>
+        <Compile Include="Common\DelegateCommand.cs" />
+        <Compile Include="Common\KeyHandler.cs" />
+        <Compile Include="Converters\AutoClosingNotifyConverter.cs" />
+        <Compile Include="Converters\ConnectionStateImageConverter.cs" />
+        <Compile Include="Converters\DescriptionConverter.cs" />
+        <Compile Include="Converters\PnlColorConverter.cs" />
+        <Compile Include="Converters\SignConverter.cs" />
+        <Compile Include="Converters\StrategyStatesImageConverter.cs" />
+        <Compile Include="MainWindow.xaml.cs">
+            <DependentUpon>MainWindow.xaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Page Include="Views\Hedges\ChildControls\HedgeContextMenu.xaml" />
+        <Page Include="Views\Hedges\ChildControls\HedgeOrdersInfoView.xaml" />
+        <Page Include="Views\Hedges\FirstLevelView.xaml" />
+        <Page Include="Views\Hedges\HedgeContainerView.xaml" />
+        <Page Include="Views\Hedges\MainLevelView.xaml" />
+        <Page Include="Views\Hedges\SecondLevelView.xaml" />
+        <Page Include="Views\Hedges\ThirdLevelView.xaml" />
+        <Page Include="Views\Main\MainShellView.xaml" />
+        <Page Include="Views\Main\MainView.xaml" />
+        <Page Include="Views\Main\StatusPanelView.xaml" />
+        <Page Include="Views\Main\TopToolBarView.xaml" />
+        <Page Include="Views\Options\ChildControls\OptionOrdersInfoView.xaml" />
+        <Page Include="Views\Options\OptionContainerView.xaml" />
+        <Page Include="Views\Options\OptionFirstLevelView.xaml" />
+        <Page Include="Views\Options\OptionMainLevelView.xaml" />
+        <Page Include="Views\Options\OptionSecondLevelView.xaml" />
+        <Page Include="Views\Options\OptionThirdLevelView.xaml" />
+        <Page Include="Views\PnlWindow.xaml" />
+        <Page Include="Views\StrategyMessageBox.xaml" />
+        <Page Include="Views\ConfigurationWindow.xaml" />
+        <Page Include="Views\SettingsViews\SettingsHedgeView.xaml" />
+        <Page Include="Views\SettingsViews\SettingsMainView.xaml" />
+        <Page Include="Views\SettingsViews\SettingsOptionView.xaml" />
+        <Page Include="Views\Adding\Strategies\AddMainStrategyView.xaml" />
+        <Page Include="Views\Adding\Strategies\AddOptionStrategyView.xaml" />
+        <Page Include="Views\Adding\Instruments\AddInstrument.xaml" />
+        <Page Include="Views\Adding\Instruments\AddOptionInstrumentView.xaml" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Properties\AssemblyInfo.cs">
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Include="Properties\Resources.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+        <EmbeddedResource Include="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="App.config" />
+        <None Include="packages.config" />
+        <None Include="Properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\GOT.Logic\GOT.Logic.csproj">
+            <Project>{0cc4b993-e5cb-4d30-b1ad-65ae29698346}</Project>
+            <Name>GOT.Logic</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\GOT.Notification\GOT.Notification.csproj">
+            <Project>{78298507-4e3d-449e-8eaa-6f2c493c937b}</Project>
+            <Name>GOT.Notification</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\GOT.SharedKernel\GOT.SharedKernel.csproj">
+            <Project>{ff89c58d-ecc9-4fe9-a87e-f2b9493ea96c}</Project>
+            <Name>GOT.SharedKernel</Name>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <Resource Include="icon.ico" />
+        <Resource Include="Images\add_white_48dp.png" />
+        <Resource Include="Images\all_delete_white_48dp.png" />
+        <Resource Include="Images\box_green_16.png" />
+        <Resource Include="Images\box_orange_16.png" />
+        <Resource Include="Images\box_red_16.png" />
+        <Resource Include="Images\box_yellow_16.png" />
+        <Resource Include="Images\connector_settings_white_48dp.png" />
+        <Resource Include="Images\connect_white_48dp.png" />
+        <Resource Include="Images\delete_white_48dp.png" />
+        <Resource Include="Images\disconnect_white_48dp.png" />
+        <Resource Include="Images\email_50.png" />
+        <Resource Include="Images\extension_white_48dp.png" />
+        <Resource Include="Images\grid_64.png" />
+        <Resource Include="Images\notification_white_48dp.png" />
+        <Resource Include="Images\options_white_48dp.png" />
+        <Resource Include="Images\portfolio_white_48dp.png" />
+        <Resource Include="Images\reset_white_48dp.png" />
+        <Resource Include="Images\save_grid_64.png" />
+        <Resource Include="Images\save_white_48dp.png" />
+        <Resource Include="Images\settings_white_48dp.png" />
+        <Resource Include="Images\start_48dp.png" />
+        <Resource Include="Images\start_all_48dp.png" />
+        <Resource Include="Images\stop_all_white_48dp.png" />
+        <Resource Include="Images\stop_white_48dp.png" />
+        <Resource Include="Images\telegram_32.png" />
+        <Resource Include="Images\upload_file_64.png" />
+        <Resource Include="Images\without_loss_32dp.png" />
+        <Resource Include="Images\without_loss_64dp.png" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Views\Adding\Instruments" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Properties\Settings.settings" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

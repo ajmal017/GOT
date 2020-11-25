@@ -1,0 +1,84 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        x:Class="GOT.UI.Views.PnlWindow"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        mc:Ignorable="d" Background="#f3f3f3"
+        Title="Информация о Pnl" Height="500" Width="700">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="HeaderLabel" TargetType="Label">
+                <Setter Property="FontFamily" Value="Tahoma" />
+                <Setter Property="Foreground" Value="{StaticResource HeaderLabelColor}" />
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+            </Style>
+
+            <Style x:Key="ValueTextBlock" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Tahoma" />
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="DemiBold" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+            </Style>
+        </Grid.Resources>
+        <TextBlock Text="Имя стратегии" HorizontalAlignment="Left" Height="75" Margin="50,15,0,0" FontSize="22"
+                   FontWeight="Bold" Foreground="{StaticResource HeaderLabelColor}"
+                   TextWrapping="WrapWithOverflow" TextAlignment="Left" VerticalAlignment="Top" Width="335"
+                   FontFamily="Tahoma" />
+
+        <Rectangle Fill="Transparent" HorizontalAlignment="Left" Height="75" Margin="430,15,0,0"
+                   Stroke="{StaticResource SecondaryColor}"
+                   StrokeThickness="2" VerticalAlignment="Top" Width="215" />
+
+        <Label Content="Создан:" Margin="440,20,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="mock date" Margin="515,25,0,0" TextDecorations="UnderLine" FontWeight="Normal"
+                   Style="{StaticResource ValueTextBlock}" />
+
+        <Label Content="Закрыт:" Margin="440,50,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="mock date" Margin="515,55,0,0" TextDecorations="UnderLine" FontWeight="Normal"
+                   Style="{StaticResource ValueTextBlock}" />
+
+        <Rectangle Fill="Transparent" HorizontalAlignment="Left" Height="310" Margin="25,115,0,0" StrokeThickness="2"
+                   RadiusX="2" RadiusY="2"
+                   Stroke="{StaticResource MainColor}" VerticalAlignment="Top" Width="520" />
+
+        <Label Content="Опционы:" Margin="50,150,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="70,180,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Label Content="Hedge:" Margin="250,150,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="255,180,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Label Content="Сумма Pnl:" Margin="400,150,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="425,180,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Rectangle Fill="Transparent" HorizontalAlignment="Left" Height="2" Margin="75,220,0,0" Stroke="LightBlue"
+                   StrokeThickness="2" VerticalAlignment="Top" Width="400" />
+
+        <Label Content="Доп. опционы:" Margin="50,230,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="70,260,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Label Content="Доп. сетка:" Margin="250,230,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="255,260,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Label Content="Сумма Доп.Pnl:" Margin="400,230,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="425,260,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Rectangle Fill="Transparent" HorizontalAlignment="Left" Height="2" Margin="75,300,0,0" Stroke="LightBlue"
+                   StrokeThickness="2" VerticalAlignment="Top" Width="400" />
+
+        <Label Content="Накопленный:" Margin="50,310,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="70,340,0,0" Style="{StaticResource ValueTextBlock}" />
+
+        <Label Content="Общий:" Margin="400,310,0,0" Style="{StaticResource HeaderLabel}" />
+        <TextBlock Text="0" Margin="425,340,0,0" Style="{StaticResource ValueTextBlock}" />
+
+    </Grid>
+</Window>

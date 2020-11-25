@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{0CC4B993-E5CB-4D30-B1AD-65AE29698346}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>GOT.Logic</RootNamespace>
+        <AssemblyName>GOT.Logic</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <LangVersion>8</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="CSharpAPI, Version=9.76.1.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\GOT.SharedKernel\References\CSharpAPI.dll</HintPath>
+        </Reference>
+        <Reference Include="Interop.CQG, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\GOT.SharedKernel\References\Interop.CQG.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="MoreLinq, Version=3.3.2.0, Culture=neutral, PublicKeyToken=384d532d7e88985d">
+          <HintPath>..\packages\morelinq.3.3.2\lib\net451\MoreLinq.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="mscorlib" />
+        <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+          <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="PresentationFramework" />
+        <Reference Include="System" />
+        <Reference Include="System.Configuration" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="System.IO.Compression" />
+        <Reference Include="System.Runtime.Serialization" />
+        <Reference Include="System.ServiceModel" />
+        <Reference Include="System.Transactions" />
+        <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+          <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Xml" />
+        <Reference Include="WindowsBase" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Connectors\Cqg\CqgConnector.cs" />
+        <Compile Include="Connectors\IConnector.cs" />
+        <Compile Include="Connectors\InteractiveBrokers\IbCodeHandler.cs" />
+        <Compile Include="Connectors\InteractiveBrokers\IBCodes.cs" />
+        <Compile Include="Connectors\InteractiveBrokers\IbConnector.cs" />
+        <Compile Include="DTO\InstrumentDTO.cs" />
+        <Compile Include="Enums\ClosingState.cs" />
+        <Compile Include="Enums\ConnectionStates.cs" />
+        <Compile Include="Enums\Directions.cs" />
+        <Compile Include="Enums\HedgeGrades.cs" />
+        <Compile Include="Enums\HedgeSessionStatus.cs" />
+        <Compile Include="Enums\InstrumentTypes.cs" />
+        <Compile Include="Enums\LifetimeOptions.cs" />
+        <Compile Include="Enums\OptionTypes.cs" />
+        <Compile Include="Enums\OrderState.cs" />
+        <Compile Include="Enums\OrderTypes.cs" />
+        <Compile Include="Enums\StopLogicType.cs" />
+        <Compile Include="Enums\HedgeStrategyFields.cs" />
+        <Compile Include="Enums\StrategyStates.cs" />
+        <Compile Include="Enums\WorkingMode.cs" />
+        <Compile Include="GotContext.cs" />
+        <Compile Include="IGotContext.cs" />
+        <Compile Include="Models\Account.cs" />
+        <Compile Include="Models\Instruments\Future.cs" />
+        <Compile Include="Models\Instruments\Instrument.cs" />
+        <Compile Include="Models\Instruments\Option.cs" />
+        <Compile Include="Models\Order.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Strategies\Bases\BaseContainer.cs" />
+        <Compile Include="Strategies\Bases\BaseStrategy.cs" />
+        <Compile Include="Strategies\Bases\IHolder.cs" />
+        <Compile Include="Strategies\Hedges\HedgeContainer.cs" />
+        <Compile Include="Strategies\Hedges\HedgeHolder.cs" />
+        <Compile Include="Strategies\Hedges\HedgeStrategy.cs" />
+        <Compile Include="Strategies\MainStrategy.cs" />
+        <Compile Include="Strategies\Options\OptionContainer.cs" />
+        <Compile Include="Strategies\Options\OptionHolder.cs" />
+        <Compile Include="Strategies\Options\OptionStrategy.cs" />
+        <Compile Include="Utils\HedgeContainerEx.cs" />
+        <Compile Include="Utils\Helpers\MathHelper.cs" />
+        <Compile Include="Utils\Helpers\OrderHelper.cs" />
+        <Compile Include="Utils\Helpers\PnlCalculator.cs" />
+        <Compile Include="Utils\ILoader.cs" />
+        <Compile Include="Utils\JsonFileManager.cs" />
+        <Compile Include="Utils\PriceRange.cs" />
+        <Compile Include="Utils\Rubicon.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\GOT.Notification\GOT.Notification.csproj">
+        <Project>{78298507-4e3d-449e-8eaa-6f2c493c937b}</Project>
+        <Name>GOT.Notification</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\GOT.SharedKernel\GOT.SharedKernel.csproj">
+        <Project>{ff89c58d-ecc9-4fe9-a87e-f2b9493ea96c}</Project>
+        <Name>GOT.SharedKernel</Name>
+      </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>

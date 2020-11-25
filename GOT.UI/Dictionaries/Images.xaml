@@ -1,0 +1,44 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ImageSource x:Key="ImgApplicationIcon">icon.ico</ImageSource>
+    
+    <!-- Action strategy buttons -->
+    <ImageSource x:Key="AddImage">../Images/add_white_48dp.png</ImageSource>
+    <ImageSource x:Key="DeleteImage">../Images/delete_white_48dp.png</ImageSource>
+    <ImageSource x:Key="DeleteAllImage">../Images/all_delete_white_48dp.png</ImageSource>
+    <ImageSource x:Key="HedgeImage">../Images/grid_64.png</ImageSource>
+    <ImageSource x:Key="OptionsImage">../Images/options_white_48dp.png</ImageSource>
+    <ImageSource x:Key="StartAllImage">../Images/start_all_48dp.png</ImageSource>
+    <ImageSource x:Key="StartImage">../Images/start_48dp.png</ImageSource>
+    <ImageSource x:Key="StopAllImage">../Images/stop_all_white_48dp.png</ImageSource>
+    <ImageSource x:Key="StopImage">../Images/stop_white_48dp.png</ImageSource>
+    <ImageSource x:Key="ResetStrategyImage">../Images/reset_white_48dp.png</ImageSource>
+    <ImageSource x:Key="SaveStrategyImage">../Images/save_white_48dp.png</ImageSource>
+    <ImageSource x:Key="LoadStrategyImage">../Images/upload_file_64.png</ImageSource>
+    <ImageSource x:Key="SaveGridImage">../Images/save_grid_64.png</ImageSource>
+
+    <!-- Strategy and Hedges states -->
+    <ImageSource x:Key="GreenBox">../Images/box_green_16.png</ImageSource>
+    <ImageSource x:Key="OrangeBox">../Images/box_orange_16.png</ImageSource>
+    <ImageSource x:Key="RedBox">../Images/box_red_16.png</ImageSource>
+    <ImageSource x:Key="YellowBox">../Images/box_yellow_16.png</ImageSource>
+    
+    <!-- Images for Settings -->
+    <ImageSource x:Key="SettingsImage">../Images/settings_white_48dp.png</ImageSource>
+    <ImageSource x:Key="EmailImage">../Images/email_50.png</ImageSource>
+    <ImageSource x:Key="ConnectorImage">../Images/connector_settings_white_48dp.png</ImageSource>
+    <ImageSource x:Key="NotificationImage">../Images/notification_white_48dp.png</ImageSource>
+    <ImageSource x:Key="PortfolioImage">../Images/portfolio_white_48dp.png</ImageSource>
+    <ImageSource x:Key="TelegramImage">../Images/telegram_32.png</ImageSource>
+    
+    <!-- Instrument and Strategy windows -->
+    <ImageSource x:Key="AddInstrumentImage">../Images/extension_white_48dp.png</ImageSource>
+    
+    <!-- Inside Instrument and Strategy fields -->
+    <ImageSource x:Key="WithoutLossImage">../Images/without_loss_64dp.png</ImageSource>
+    
+    <!-- Connector state -->
+    <ImageSource x:Key="DisconnectImage">../Images/disconnect_white_48dp.png</ImageSource>
+    <ImageSource x:Key="ConnectImage">../Images/connect_white_48dp.png</ImageSource>
+    
+</ResourceDictionary>

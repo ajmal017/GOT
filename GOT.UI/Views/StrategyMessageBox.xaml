@@ -1,0 +1,56 @@
+﻿<Window x:Class="GOT.UI.Views.StrategyMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="GOT: Information" SizeToContent="WidthAndHeight"
+        Background="WhiteSmoke" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style x:Key="DataGridTextStyle" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <DataGrid Grid.Row="1" Margin="5" Name="ItemGrid"
+                  HorizontalContentAlignment="Stretch"
+                  CanUserSortColumns="True"
+                  CanUserResizeColumns="True"
+                  VerticalContentAlignment="Stretch"
+                  ItemsSource="{Binding Strategies, Mode=Default}"
+                  IsSynchronizedWithCurrentItem="True"
+                  AutoGenerateColumns="False">
+            <!-- <DataGrid.RowStyle> -->
+            <!--     <Style TargetType="DataGridRow"> -->
+            <!--         <EventSetter Event="MouseDoubleClick" Handler="EventSetter_OnHandler" /> -->
+            <!--     </Style> -->
+            <!-- </DataGrid.RowStyle> -->
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Имя стратегии" Binding="{Binding Name}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Счет" Binding="{Binding Account.Name}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Инструмент" Binding="{Binding Instrument.Code}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Сумма теор.цен" Binding="{Binding SumTheoreticalPrices}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Накопленный Pnl" Binding="{Binding AccruedPnl}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Кол-во перезаходов" Binding="{Binding AutoRestartCounter}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Дата перезахода"
+                                    Binding="{Binding AutoRestartDate, StringFormat={}{0:dd/MM/yyyy}}"
+                                    ElementStyle="{StaticResource DataGridTextStyle}" Width="Auto" IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

@@ -1,0 +1,23 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:holders="clr-namespace:GOT.UI.ViewModels.Holders"
+                    xmlns:viewModels="clr-namespace:GOT.UI.ViewModels"
+                    xmlns:main="clr-namespace:GOT.UI.Views.Main"
+                    xmlns:hedges="clr-namespace:GOT.UI.Views.Hedges"
+                    xmlns:options="clr-namespace:GOT.UI.Views.Options">
+    
+    <DataTemplate DataType="{x:Type viewModels:MainViewModel}">
+        <main:MainView />
+    </DataTemplate>
+
+    <!-- hedges -->
+    <DataTemplate DataType="{x:Type holders:HedgeHolderViewModel}">
+        <hedges:HedgeContainerView />
+    </DataTemplate>
+
+    <!-- options -->
+    <DataTemplate DataType="{x:Type holders:OptionsHolderViewModel}">
+        <options:OptionContainerView />
+    </DataTemplate>
+
+</ResourceDictionary>

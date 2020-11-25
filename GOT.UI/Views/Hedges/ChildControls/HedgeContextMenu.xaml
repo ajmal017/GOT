@@ -1,0 +1,35 @@
+<ContextMenu x:Class="GOT.UI.Views.Hedges.ChildControls.HedgeContextMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <MenuItem Header="Цена Активации">
+        <MenuItem Header="Задать Sell строки"
+                  Command="{Binding SetSellActivatePricesCommand}" />
+        <MenuItem Header="Задать Buy строки"
+                  Command="{Binding SetBuyActivatePricesCommand}" />
+        <MenuItem Header="Сместить всю сетку"
+                  Command="{Binding AllActivatePricesChangeCommand}" />
+        <MenuItem Header="Сместить Sell строки"
+                  Command="{Binding SellActivatePricesChangeCommand}" />
+        <MenuItem Header="Сместить Buy строки"
+                  Command="{Binding BuyActivatePricesChangeCommand}" />
+    </MenuItem>
+    <Separator />
+
+    <MenuItem Header="Стоп/Антистоп">
+        <MenuItem Header="Задать Смещение Антистопа"
+                  Command="{Binding SetAntiOffsetCommand}" />
+        <MenuItem Header="Задать Безубыток Антистопа"
+                  Command="{Binding SetAntiBreakCommand}" />
+        <MenuItem Header="Задать Рестарт Cтопа"
+                  Command="{Binding SetRestartStopCommand}" />
+        <MenuItem Header="Задать Сдвиг Цены"
+                  Command="{Binding SetShiftStepPriceCommand}" />
+    </MenuItem>
+    <Separator />
+    <MenuItem Header="Объем">
+        <MenuItem Header="Задать Объем"
+                  Command="{Binding VolumeChangedCommand}" />
+        <MenuItem Header="Увеличить/Уменьшить объем"
+                  Command="{Binding AddVolumeCommand}" />
+    </MenuItem>
+</ContextMenu>

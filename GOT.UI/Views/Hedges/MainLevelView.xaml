@@ -1,0 +1,150 @@
+<UserControl x:Class="GOT.UI.Views.Hedges.MainLevelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:childControls="clr-namespace:GOT.UI.Views.Hedges.ChildControls"
+             mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="1000">
+    
+    <UserControl.Resources>
+        <Style x:Key="GridStyle" BasedOn="{StaticResource DataGridStyle}" TargetType="{x:Type DataGrid}">
+            <EventSetter Event="PreviewKeyDown" Handler="PreviewKeyDownSetter" />
+        </Style>
+
+        <Style TargetType="DataGridRow" BasedOn="{StaticResource HedgeRows}" />
+
+    </UserControl.Resources>
+    <Grid x:Name="CardsGrid" Background="{StaticResource MainGridBackground}">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="{Binding MenuItemHeader}" Command="{Binding ShowInfoCommand}" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" VerticalAlignment="Top" Height="50" Background="{StaticResource SecondaryColor}">
+
+            <Button x:Name="AddSellStrategy" Foreground="White" Content="Sell" Background="Transparent" FontSize="16"
+                    Height="36" Margin="0, 2, 500, 2" BorderBrush="White" BorderThickness="1.2"
+                    HorizontalAlignment="Right" ToolTip="Добавить Sell стратегию" Padding="6" FontFamily="Tahoma"
+                    Command="{Binding AddSellStrategyCommand}" />
+
+            <Button x:Name="AddBuyStrategy" Foreground="White" Content="Buy" Background="Transparent"
+                    FontSize="16" Height="36" Margin="0, 2, 450, 2"
+                    BorderBrush="White" BorderThickness="1.2" HorizontalAlignment="Right"
+                    ToolTip="Добавить Buy стратегию" Padding="6" FontFamily="Tahoma"
+                    Command="{Binding AddBuyStrategyCommand}" />
+
+            <Button x:Name="Start" Margin="0, 0, 400, 0" ToolTip="Запустить стратегию"
+                    Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding StartSingleStrategyCommand}">
+                <Image Source="{StaticResource StartImage}"/>
+            </Button>
+            <Button x:Name="StartAll" Margin="0, 0,350, 0" ToolTip="Запустить все стратегии"
+                    Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding StartAllCommand}">
+                <Image Source="{StaticResource StartAllImage}"/>
+            </Button>
+            <Button x:Name="Stop" Margin="0, 0, 300, 0" ToolTip="Остановить стратегию"
+                    Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding StopSingleStrategyCommand}">
+                <Image Source="{StaticResource StopImage}"/>
+            </Button>
+            <Button x:Name="StopAll" Margin="0, 0, 250, 0" ToolTip="Остановить все стратегии"
+                    Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding StopAllCommand}">
+                <Image Source="{StaticResource StopAllImage}"/>
+            </Button>
+            <Button x:Name="Delete" Margin="0, 0, 100, 0" ToolTip="Удалить стратегию"
+                    Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding DeleteStrategyCommand}">
+                <Image Source="{StaticResource DeleteImage}"/>
+            </Button>
+            <Button x:Name="DeleteAll" Margin="0, 0, 50, 0"
+                    ToolTip="Удалить стратегию" Style="{StaticResource TopToolBarButtonStyle}"
+                    Command="{Binding DeleteAllCommand}">
+                <Image Source="{StaticResource DeleteAllImage}"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,0,10" VerticalAlignment="Stretch">
+            <DataGrid Name="GridItems" Style="{StaticResource GridStyle}" Margin="10,10,10,0"
+                      ItemsSource="{Binding StrategiesCollection}"
+                      IsReadOnly="False" CanUserAddRows="False"
+                      SelectedItem="{Binding SelectedStrategy}">
+                <DataGrid.ContextMenu>
+                    <childControls:HedgeContextMenu />
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Состояние" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Source="{Binding StrategyState, Converter={StaticResource StrategyStatesImageConv}}"
+                                    Height="16" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Уровень" Binding="{Binding Level}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Объем" Binding="{Binding Volume}" />
+                    <DataGridTextColumn Header="Цена активации" Binding="{Binding ActivatePrice}" />
+                    <DataGridTextColumn Header="СмещениеАС" Binding="{Binding AntiOffset}" />
+                    <DataGridTextColumn Header="БезубытокАС" Binding="{Binding AntiBreakEvenOffset}" />
+                    <DataGridTextColumn Header="Рестарт стопа" Binding="{Binding StopRestartOffset}" />
+                    <DataGridTextColumn Header="Сдвиг цены" Binding="{Binding ShiftStepPrice}" />
+                    <DataGridTextColumn Header="Сигн.цена АС" Binding="{Binding AntiStopPrice}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Цена исп." Binding="{Binding ExecutionPrice}" IsReadOnly="True" />
+                    <DataGridTemplateColumn Header="Исп. Объем" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FilledVolume, Converter={StaticResource SignConv}}"
+                                           FontWeight="ExtraBold"
+                                           FontStyle="Italic"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Pnl" Binding="{Binding Pnl}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="$$-Pnl" Binding="{Binding PnlCurrency}" IsReadOnly="True" />
+                    <DataGridComboBoxColumn Header="Доп.параметры" SelectedItemBinding="{Binding HedgeGrade}"
+                                            ItemsSource="{Binding Source={StaticResource HedgeGrades}}" />
+                    <DataGridTemplateColumn Header="Тип логики" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="5,0,5,0">
+                                    <Image Source="{StaticResource WithoutLossImage}" Margin="0,0,5,0"
+                                           Width="20" Height="20" ToolTip="Безубыток включен">
+                                        <Image.Style>
+                                            <Style TargetType="Image">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WithoutLossPrice}" Value="0">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                    <TextBlock Text="{Binding LogicType}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <Rectangle Grid.Row="2" Fill="{StaticResource MainColor}" Height="1" Margin="30,0,30,15"
+                   VerticalAlignment="Bottom" RadiusX="1" RadiusY="1" />
+
+        <Grid Grid.Row="3" Visibility="{Binding InfoVisible}" Height="200" Margin="10,0,10,0">
+            <childControls:HedgeOrdersInfoView DataContext="{Binding SelectedStrategy}" />
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,138 @@
+<views:FrameWindow x:Class="GOT.UI.Views.SettingsViews.SettingsMainView"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:views="clr-namespace:GOT.UI.Views"
+                   mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+                   BorderBrush="{StaticResource SecondaryColor}"
+                   DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                   Title="{Binding Title}" Height="420" Width="580" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="TitlesGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#00a1d2">
+            <Grid HorizontalAlignment="Center" Height="Auto" Margin="0,30,0,0" VerticalAlignment="Top">
+                <Image Source="{StaticResource SettingsImage}" HorizontalAlignment="Left" Width="28" />
+                <TextBlock Text="Main" Margin="35,0,10,0" FontFamily="Tahoma" FontSize="20"
+                           FontWeight="DemiBold" Foreground="white" />
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1" VerticalAlignment="Stretch" Background="#f3f3f3">
+
+            <Rectangle Fill="White" HorizontalAlignment="Left" Margin="22,20,0,0"
+                       Stroke="#FF419FE1" VerticalAlignment="Top" RadiusX="5" RadiusY="5"
+                       Height="{Binding ActualHeight, ElementName=UserCardGrid}"
+                       Width="{Binding ActualWidth, ElementName=UserCardGrid}">
+                <Rectangle.Effect>
+                    <DropShadowEffect ShadowDepth="2" Color="{StaticResource RectangleShadowColor}" />
+                </Rectangle.Effect>
+            </Rectangle>
+
+            <Grid Name="UserCardGrid" Margin="26,20,26,60"
+                  DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=EditStrategy}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <TextBlock x:Name="CurrentAccount" Margin="10,10,0,0"
+                               HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18"
+                               Style="{StaticResource SettingsMainCardsTextBlock}" />
+                    <TextBlock Margin="10,10,0,0" VerticalAlignment="Bottom"
+                               Text="{Binding Path=CreatingDate, StringFormat=dd-MM-yyyy}"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" FontSize="12" />
+                </Grid>
+                <Grid Grid.Row="1">
+                    <TextBlock Margin="10,10,0,0" Text="Имя стратегии"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" />
+                    <TextBox Name="StrategyName" Margin="180,10,0,0"
+                             Text="{Binding Name, Mode=OneTime}"
+                             TextChanged="NameOnTextChanged"
+                             LostKeyboardFocus="NameLostKeyboardFocus"
+                             TextWrapping="Wrap" AcceptsReturn="True"
+                             Style="{StaticResource CardsTextBox}" />
+                    <TextBlock Name="NameToolTip" Margin="180,30,0,0" FontSize="10" Foreground="Red"
+                               Text="Имя стратегии уже занято"
+                               Width="auto" Height="auto" />
+                </Grid>
+                <Grid Grid.Row="2" ToolTip="Процент, при достижении которого произойдёт автоперезаход">
+                    <TextBlock Margin="10,10,0,0" Text="Процент для АЗ"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" />
+                    <TextBox x:Name="PercentAutoClosing" Margin="180,10,0,0"
+                             Text="{Binding PercentAutoClosing, Mode=OneTime}"
+                             PreviewTextInput="PreviewTextInputHandler" MaxLength="5"
+                             DataObject.Pasting="PastingHandler"
+                             Style="{StaticResource CardsTextBox}" />
+                </Grid>
+
+                <Grid Grid.Row="3" ToolTip="Смещение диапазона, относительно середины страйков, необходимое для АЗ">
+                    <TextBlock Margin="10,10,0,0" Text="Шаг автозакрытия"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" />
+                    <TextBox x:Name="AutoClosingShiftTextBox" Margin="180,10,0,0"
+                             Text="{Binding AutoClosingShift, Mode=OneTime}"
+                             PreviewTextInput="PreviewTextInputHandler" MaxLength="6"
+                             DataObject.Pasting="PastingHandler" Style="{StaticResource CardsTextBox}" />
+                </Grid>
+
+                <Grid Grid.Row="4" VerticalAlignment="Center">
+                    <TextBlock Margin="10,0,0,0" Height="auto" Text="Инструмент"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" />
+                    <TextBox Name="InstrumentTextBox" Margin="180,0,0,0" IsEnabled="False" Width="80"
+                             Text="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                             Path=InstrumentName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource CardsTextBox}" />
+
+                    <Button Height="22" Margin="274,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Width="30" Style="{StaticResource InstrumentButtonStyle}"
+                            Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                            Path=DataContext.OpenInstrumentWindowCommand}">
+                        <Image Source="{StaticResource AddInstrumentImage}" />
+                        <Button.Effect>
+                            <DropShadowEffect ShadowDepth="1" Color="{StaticResource RectangleShadowColor}" />
+                        </Button.Effect>
+                    </Button>
+                </Grid>
+
+                <Grid Grid.Row="5">
+                    <TextBlock Margin="10,10,0,0" Text="Накопленный Pnl"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" />
+                    <TextBox Margin="180,10,0,0" Text="{Binding AccruedPnl}"
+                             IsEnabled="False" Style="{StaticResource CardsTextBox}" />
+                </Grid>
+                <Grid Grid.Row="6">
+                    <TextBlock Margin="10,10,0,0" Text="Кол-во перезаходов"
+                               Style="{StaticResource SettingsChildCardsTextBlock}" />
+                    <TextBox Margin="180,10,0,0" Text="{Binding AutoRestartCounter}" IsEnabled="False"
+                             Style="{StaticResource CardsTextBox}" />
+                </Grid>
+
+            </Grid>
+
+            <Button HorizontalAlignment="Right" Height="28" Margin="0,0,90,20" VerticalAlignment="Bottom"
+                    Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.SaveCommand}"
+                    Width="50" Style="{StaticResource DialogButton}">
+                <Button.Effect>
+                    <DropShadowEffect ShadowDepth="3" Color="{StaticResource RectangleShadowColor}" />
+                </Button.Effect>
+            </Button>
+            <Button HorizontalAlignment="Right" Height="28" Margin="0,0,26,20" VerticalAlignment="Bottom"
+                    IsCancel="True" Width="50" Style="{StaticResource DialogButton}" Content="Cancel">
+                <Button.Effect>
+                    <DropShadowEffect ShadowDepth="3" Color="{StaticResource RectangleShadowColor}" />
+                </Button.Effect>
+            </Button>
+        </Grid>
+    </Grid>
+</views:FrameWindow>
