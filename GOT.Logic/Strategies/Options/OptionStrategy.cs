@@ -87,7 +87,7 @@ namespace GOT.Logic.Strategies.Options
         }
 
         /// <summary>
-        ///     Режим работы: открытие позиции, закрытие позиции, информационный.
+        ///     Режим работы: открытие позиции, закрытие позиции.
         /// </summary>
         [JsonProperty("workingMode")]
         public WorkingMode WorkingMode

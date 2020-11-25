@@ -307,8 +307,6 @@ namespace GOT.Logic.Strategies
         public override void Start()
         {
             try {
-                SendInfoNotification("bla bla");
-                return;
                 var messageAboutChildVolumes = IsNotEqualsChildVolumes(OptionHolder, HedgeHolder);
                 if (messageAboutChildVolumes != string.Empty) {
                     throw new StrategyException(messageAboutChildVolumes);
