@@ -16,5 +16,4 @@
         <main:MainView DataContext="{Binding MainViewModel}" Grid.Row="1" />
         <main:StatusPanelView DataContext="{Binding StatusPanel}" Grid.Row="2" />
     </Grid>
-
 </UserControl>
