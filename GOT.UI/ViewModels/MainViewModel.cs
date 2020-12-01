@@ -45,7 +45,6 @@ namespace GOT.UI.ViewModels
             ResetStrategyCommand = new DelegateCommand(ResetStrategy, CanResetStrategy);
             ManualReenterCommand = new DelegateCommand(ManualReenter, CanManualReopen);
             OpenWindowCommand = new DelegateCommand<string>(OnOpenWindow, _ => SelectedStrategy != null);
-            OpenInfoWindowCommand = new DelegateCommand(OpenMainStrategiesInfo, _ => _context.MainStrategies.Any());
             SaveStrategyCommand = new DelegateCommand(SaveStrategy, CanSaveStrategy);
             LoadStrategyCommand = new DelegateCommand(LoadStrategy, CanLoadStrategy);
             SaveLoadHedgeTemplateCommand = new DelegateCommand(SaveLoadHedgeTemplate, _ => SelectedStrategy != null);
@@ -54,7 +53,7 @@ namespace GOT.UI.ViewModels
             GroupByStateStrategyCommand = new DelegateCommand(OnGroupByStateStrategy);
             GroupByAccountCommand = new DelegateCommand(OnGroupByAccount);
             UngroupingCommand = new DelegateCommand(OnUngrouping);
-            OpenInfoWindowCommand = new DelegateCommand(OpenMainStrategiesInfo);
+            OpenInfoWindowCommand = new DelegateCommand(OpenMainStrategiesInfo, _ => _context.MainStrategies.Any());
             StrategiesCollection = CollectionViewSource.GetDefaultView(_context.MainStrategies);
             GroupCollection = StrategiesCollection.GroupDescriptions;
             FillChildWindows();
