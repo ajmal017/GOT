@@ -36,11 +36,30 @@ namespace GOT.Logic.Models.Instruments
         [JsonProperty("multiplier")]
         public virtual decimal Multiplier { get; set; }
 
+        private DateTime _expirationDate;
+
         [JsonProperty("expirationDate")]
-        public virtual DateTime ExpirationDate { get; set; }
+        public virtual DateTime ExpirationDate
+        {
+            get => _expirationDate;
+            set
+            {
+                _expirationDate = value;
+                MonthNumber = ExpirationDate.Month;
+            }
+        }
+        
+        /// <summary>
+        ///     Номер месяца, от 1 до 12 соответственно.
+        /// </summary>
+        [JsonProperty("monthNumber")]
+        public int MonthNumber { get; set; }
 
         [JsonProperty("symbol")]
         public virtual string Symbol { get; set; }
+
+        [JsonProperty("tickerId")]
+        public int TickerId { get; set; }
 
         [JsonProperty("priceStep")]
         public virtual decimal PriceStep { get; set; }

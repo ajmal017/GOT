@@ -29,7 +29,7 @@ namespace GOT.UI.Views.SettingsViews
             _context = context;
             _oldStrategyName = editStrategy.Name;
             EditStrategy = editStrategy;
-            InstrumentName = editStrategy.Instrument.FullName;
+            InstrumentName = editStrategy.Instrument.Code;
             Title = editStrategy.Name;
             CurrentAccount.Text = "Портфель: " + editStrategy.Account;
             _strategiesNames = strategiesNames;
@@ -60,7 +60,7 @@ namespace GOT.UI.Views.SettingsViews
                 var instrument = new AddInstrument(_context.Connector);
                 if (instrument.ShowDialog().Value) {
                     _currentInstrument = instrument.SelectedInstrument;
-                    InstrumentName = _currentInstrument.FullName;
+                    InstrumentName = _currentInstrument.Code;
                 }
             }
         }

@@ -78,7 +78,7 @@
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Период распада" Binding="{Binding Lifetime}" />
                     <DataGridTextColumn Header="Тип опциона" Binding="{Binding OptionType}" />
-                    <DataGridTextColumn Header="Инструмент" Binding="{Binding Instrument.FullName}" />
+                    <DataGridTextColumn Header="Инструмент" Binding="{Binding Instrument.TradingClass}" />
                     <DataGridTextColumn Header="Страйк" Binding="{Binding Instrument.Strike}" />
                     <DataGridTextColumn Header="Дата экспирации"
                                         Binding="{Binding Instrument.ExpirationDate, StringFormat={}{0:dd/MM/yyyy}}" />

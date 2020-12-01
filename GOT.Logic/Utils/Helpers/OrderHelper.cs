@@ -42,6 +42,7 @@ namespace GOT.Logic.Utils.Helpers
             {
                 OrderId = order.Id,
                 TotalQuantity = order.Volume,
+                Account = order.Account,
                 Action = order.ToIbDirection(),
                 OrderType = order.ToIbOrderType()
             };

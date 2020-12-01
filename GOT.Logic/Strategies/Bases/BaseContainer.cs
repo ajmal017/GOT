@@ -21,6 +21,9 @@ namespace GOT.Logic.Strategies.Bases
         [JsonProperty("parentName")]
         public string ParentStrategyName { get; set; }
 
+        [JsonProperty("account")]
+        public string Account { get; set; }
+
         [JsonProperty("parentInstrument")]
         public virtual Future ParentInstrument { get; set; }
 
@@ -34,7 +37,7 @@ namespace GOT.Logic.Strategies.Bases
 
         public IGotLogger Logger { get; set; }
 
-        public INotification[] GotNotifications { get; set; }
+        public INotification GotNotification { get; set; }
 
         public virtual decimal Pnl { get; set; }
 
@@ -81,7 +84,11 @@ namespace GOT.Logic.Strategies.Bases
         {
         }
 
-        public virtual void SetNotifications(INotification[] notification)
+        public virtual void SetAccount(string account)
+        {
+        }
+        
+        public virtual void SetNotification(INotification notification)
         {
         }
 

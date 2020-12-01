@@ -6,6 +6,7 @@ namespace GOT.Logic.Enums
     [JsonConverter(typeof(StringEnumConverter), new object[] { true })]
     public enum OptionTypes
     {
+        None,
         /// <summary>
         /// Call option
         /// </summary>

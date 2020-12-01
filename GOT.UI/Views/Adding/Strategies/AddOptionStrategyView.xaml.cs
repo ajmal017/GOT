@@ -10,7 +10,7 @@ using GOT.Logic.Strategies.Options;
 using GOT.UI.Common;
 using GOT.UI.Views.Adding.Instruments;
 
-namespace GOT.UI.Views.Adding.Strategy
+namespace GOT.UI.Views.Adding.Strategies
 {
     /// <summary>
     ///     Логика взаимодействия для NewStrategyWindow.xaml
@@ -51,7 +51,7 @@ namespace GOT.UI.Views.Adding.Strategy
                 if (instrument.ShowDialog().Value) {
                     var selectedInstr = instrument.SelectedInstrument;
                     _currentInstrument = selectedInstr;
-                    InstrumentTextBox.Text = _currentInstrument.FullName;
+                    InstrumentTextBox.Text = _currentInstrument.TradingClass;
                 }
             }
             catch (Exception e) {
@@ -70,7 +70,8 @@ namespace GOT.UI.Views.Adding.Strategy
                 Strategy = new OptionStrategy(_container.ParentStrategyName);
                 Strategy.Connector = _container.Connector;
                 Strategy.Logger = _container.Logger;
-                Strategy.Notifications = _container.GotNotifications;
+                Strategy.Notification = _container.GotNotification;
+                Strategy.Account = _container.Account;
                 var direction = DirectionComboBox.SelectedItem.ToString();
                 Strategy.Direction = (Directions) Enum.Parse(typeof(Directions), direction);
                 var lifetime = LifetimeComboBox.SelectedItem.ToString();

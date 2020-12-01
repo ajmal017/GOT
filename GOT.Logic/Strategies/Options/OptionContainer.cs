@@ -50,18 +50,12 @@ namespace GOT.Logic.Strategies.Options
                 Strategies.ForEach(s =>
                 {
                     s.Stop();
-                    Connector.DescribeInstrument(s.Instrument.Id);
+                    Connector.UnsubscribeInstrument(s.Instrument.Id);
                 });
             }
             catch (Exception ex) {
                 Logger.AddLog($"{ex.StackTrace}", 3);
             }
-        }
-
-        public override void Remove(OptionStrategy strategy)
-        {
-            Connector.RemoveInstrument(strategy.Instrument);
-            base.Remove(strategy);
         }
 
         public bool CanAddStrategy()
@@ -120,7 +114,12 @@ namespace GOT.Logic.Strategies.Options
                     : 0);
             }));
         }
-
+        
+        /// <summary>
+        ///     Рассчитать величину на которую сдвинулся страйк
+        /// </summary>
+        /// <param name="currentPrice">Текущая цена инструмента</param>
+        /// <returns></returns>
         public decimal GetShiftStrikeStep(decimal currentPrice)
         {
             decimal shiftStrikeStep = 0;
@@ -134,8 +133,7 @@ namespace GOT.Logic.Strategies.Options
 
             return shiftStrikeStep;
         }
-
-        /// <summary>
+/// <summary>
         ///     Проверяет, сдвинулась ли цена инструмента(фьючерса), относительно диапазона страйков.
         /// </summary>
         /// <param name="currentPrice">текущая цена фьючерса</param>
@@ -146,14 +144,14 @@ namespace GOT.Logic.Strategies.Options
                 return false;
             }
 
-            var middleStrikesRange = CalculateMiddleStrikesRange();
-            var shiftedPrice = middleStrikesRange * shift;
+            var halfStrikesRange = CalculateHalfStrikesRange();
+            var shiftedPrice = halfStrikesRange * shift;
 
             var middlePrice = CalculateMiddlePrice();
             var diff = currentPrice - middlePrice;
 
             //Цена смещения диапазона между опционами
-            var priceOptionRange = middlePrice + shiftedPrice * Math.Sign(diff);
+            var priceOptionRange = middlePrice + (shiftedPrice * Math.Sign(diff));
 
             var isMoreCurrentPrice = currentPrice > priceOptionRange && currentPrice > middlePrice;
             var isLessCurrentPrice = currentPrice < priceOptionRange && currentPrice < middlePrice;
@@ -169,25 +167,32 @@ namespace GOT.Logic.Strategies.Options
             return false;
         }
 
+        private bool IsAllStrategiesDone()
+        {
+            if (GetBasisStrategies().Count < 2) {
+                return false;
+            }
+
+            return GetBasisStrategies().All(s => s.RemainVolume == 0);
+        }
+
         /// <summary>
         ///     Высчитать шаг страйка
         /// </summary>
         public decimal CalculateStrikeStep()
         {
             try {
-                var instruments = Connector.GetOptions(ParentInstrument.Code, ParentInstrument.Exchange);
                 var currentInstrument = GetBasisStrategies().First().Instrument;
-                var sortedList = instruments.Where(i =>
-                {
-                    var isExp = i.ExpirationDate.Equals(currentInstrument.ExpirationDate);
-                    var isCall = i.OptionType == currentInstrument.OptionType;
-                    return isExp && isCall;
-                }).OrderBy(s => s.Strike).ToList();
-
-                var avgQuantity = (int) Math.Round(sortedList.Count / 2d);
-                var firstStrike = sortedList[avgQuantity].Strike;
-                var secondStrike = sortedList[avgQuantity - 1].Strike;
-                var strikeStep = Math.Abs((decimal) (firstStrike - secondStrike));
+                if (currentInstrument == null)
+                    throw new StrategyException("Инструмент отсутствует");
+                var firstStrike = currentInstrument.Strike;
+                
+                var instruments = Connector.GetOptions(ParentInstrument);
+                var secondStrike = instruments.Where(i => i.ExpirationDate.Equals(currentInstrument.ExpirationDate))
+                                              .OrderBy(s => s.Strike)
+                                              .First(s=> s.Strike > firstStrike).Strike;
+                
+                var strikeStep = Math.Abs(secondStrike - firstStrike);
                 return strikeStep;
             }
             catch (Exception e) {
@@ -203,42 +208,26 @@ namespace GOT.Logic.Strategies.Options
         {
             return GetBasisStrategies().Average(s => s.Instrument.Strike);
         }
-
+        
         /// <summary>
-        ///     Высчитать середину диапазона между страйками.
+        ///     Высчитать половину диапазона между страйками.
         /// </summary>
-        private decimal CalculateMiddleStrikesRange()
+        /// <remarks>
+        /// Высчитывается половина, т.к. при перезаходе смотрим сместилась ли относительно этой половины
+        /// цена базового актива(фьюча)
+        /// </remarks>
+        private decimal CalculateHalfStrikesRange()
         {
-            var range = 0.0m;
-            if (!GetBasisStrategies().Any()) {
-                return range;
-            }
-
             var firstStrike = GetBasisStrategies().Max(s => s.Instrument.Strike);
             var lastStrike = GetBasisStrategies().Min(s => s.Instrument.Strike);
-            range = Math.Abs(firstStrike - lastStrike) / 2;
-            return range;
+            return Math.Abs(firstStrike - lastStrike) / 2;
         }
 
-        private bool IsAllStrategiesDone()
-        {
-            if (GetBasisStrategies().Count < 2) {
-                return false;
-            }
-
-            return GetBasisStrategies().All(s => s.RemainVolume == 0);
-        }
-
-        public bool UpdateStrategy(decimal shiftStrikeStep)
+        public void UpdateStrategy(decimal shiftStrikeStep)
         {
             try {
-                if (!Strategies.Any()) {
-                    return false;
-                }
-
                 var oldStrategies = Strategies.ToList();
-                var instruments = Connector.GetOptions(ParentInstrument.Code, ParentInstrument.Exchange);
-
+                var instruments = Connector.GetOptions(ParentInstrument).ToList();
                 foreach (var oldStrategy in oldStrategies) {
                     var newInstrument = UpdateInstrument(oldStrategy.Instrument, shiftStrikeStep, instruments);
                     var newStrategy = UpdateStrategy(oldStrategy, newInstrument);
@@ -248,10 +237,7 @@ namespace GOT.Logic.Strategies.Options
             }
             catch (Exception e) {
                 Logger.AddLog("Error Create New Options:" + e.Message, 3);
-                return false;
             }
-
-            return true;
         }
 
         /// <summary>
@@ -263,13 +249,10 @@ namespace GOT.Logic.Strategies.Options
         /// <returns>Новый инструмент</returns>
         private Option UpdateInstrument(Option oldInstrument, decimal shift, IEnumerable<Option> options)
         {
-            var newOption = oldInstrument;
             var filteredSecurities =
-                options.Where(o => o.OptionType == oldInstrument.OptionType &&
-                                   o.Strike == oldInstrument.Strike + shift)
+                options.Where(o => o.Strike == oldInstrument.Strike + shift)
                        .OrderBy(o => o.ExpirationDate)
                        .ToList();
-
             try {
                 var oldDate = oldInstrument.ExpirationDate.Date;
                 var nowDate = DateTimeOffset.Now.Date;
@@ -278,40 +261,38 @@ namespace GOT.Logic.Strategies.Options
                 }
 
                 var diffDays = oldDate.Subtract(nowDate);
-                const int minimumMonthDays = 12;
-                var isMonthExpiry = diffDays < TimeSpan.FromDays(minimumMonthDays);
+                const int minimumDaysToExpiration = 12;
+                var isMonthExpiry = diffDays < TimeSpan.FromDays(minimumDaysToExpiration);
                 if (isMonthExpiry) {
                     var diffExpiryDates =
                         filteredSecurities.Where(o => o.ExpirationDate != oldInstrument.ExpirationDate);
-                    newOption = GetNewMonthInstrument(oldInstrument.MonthNumber, diffExpiryDates);
+                    return GetNewMonthInstrument(oldInstrument, diffExpiryDates);
                 }
             }
             catch (StrategyException e) {
                 Logger.AddLog(e.Message, 2);
-                newOption = filteredSecurities.First(o => o.ExpirationDate == oldInstrument.ExpirationDate);
+                return filteredSecurities.First(o => o.ExpirationDate == oldInstrument.ExpirationDate);
             }
 
-            return newOption;
+            return oldInstrument;
         }
 
         /// <summary>
         ///     Подбирает инструмент со следующим месяцем.
         /// </summary>
-        /// <param name="monthNumber">текущий номер месяца(от 1 до 12)</param>
+        /// <param name="oldInstrument">текущий номер месяца(от 1 до 12)</param>
         /// <param name="instruments">Инструменты, среди которых вести отбор.</param>
         /// <returns>Инструмент с новым месяцем.</returns>
-        private Option GetNewMonthInstrument(int monthNumber, IEnumerable<Option> instruments)
+        private Option GetNewMonthInstrument(Option oldInstrument, IEnumerable<Option> instruments)
         {
-            var nextMonthNumber = monthNumber + 1;
-            var security = instruments.Where(s =>
-            {
-                if (monthNumber == 12) {
-                    return s.MonthNumber == 1;
-                }
-
-                return s.MonthNumber == nextMonthNumber;
-            }).OrderBy(s => s.ExpirationDate).Last();
-
+            const int maxMonthNumber = 12;
+            var nextMonthNumber = oldInstrument.MonthNumber == maxMonthNumber ? 1 : oldInstrument.MonthNumber + 1;
+            var security = instruments.Where(s => s.MonthNumber == nextMonthNumber)
+                                      .OrderBy(s => s.ExpirationDate)
+                                      .Last();
+            security.Currency = oldInstrument.Currency;
+            security.Symbol = oldInstrument.Symbol;
+            security.OptionType = oldInstrument.OptionType;
             return security;
         }
 
@@ -325,9 +306,11 @@ namespace GOT.Logic.Strategies.Options
                 IsBasis = oldStrategy.IsBasis,
                 OptionType = oldStrategy.OptionType,
                 Lifetime = oldStrategy.Lifetime,
-                Notifications = GotNotifications,
+                PriceStep = oldStrategy.PriceStep,
+                Notification = GotNotification,
                 Connector = Connector,
                 Logger = Logger,
+                Account = Account,
                 Instrument = newInstrument
             };
         }
@@ -338,16 +321,22 @@ namespace GOT.Logic.Strategies.Options
             Strategies.ForEach(s => s.Connector = Connector);
         }
 
-        public override void SetNotifications(INotification[] notification)
+        public override void SetNotification(INotification notification)
         {
-            GotNotifications = notification;
-            Strategies.ForEach(s => s.Notifications = notification);
+            GotNotification = notification;
+            Strategies.ForEach(s => s.Notification = notification);
         }
 
         public override void SetLogger(IGotLogger logger)
         {
             Logger = logger;
             Strategies.ForEach(s => s.Logger = logger);
+        }
+        
+        public override void SetAccount(string account)
+        {
+            Account = account;
+            Strategies.ForEach(s => s.Account = account);
         }
     }
 }

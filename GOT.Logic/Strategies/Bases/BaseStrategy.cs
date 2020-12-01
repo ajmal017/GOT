@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Threading;
 using GOT.Logic.Connectors;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models;
 using GOT.Logic.Models.Instruments;
@@ -29,7 +29,7 @@ namespace GOT.Logic.Strategies.Bases
         private StrategyStates _strategyState;
 
         private int _volume = 1;
-        private Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
+        protected Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
 
         protected BaseStrategy(string name)
         {
@@ -87,6 +87,9 @@ namespace GOT.Logic.Strategies.Bases
             }
         }
 
+        [JsonProperty("account")]
+        public virtual string Account { get; set; }
+        
         public IReadOnlyList<Order> FilledOrders => Orders.Where(o => o.OrderState == OrderState.Filled).ToList();
 
         public StrategyStates StrategyState
@@ -124,13 +127,12 @@ namespace GOT.Logic.Strategies.Bases
         public virtual decimal PnlCurrency => Pnl * Instrument.Multiplier;
 
         public virtual IConnector Connector { get; set; }
-        public virtual INotification[] Notifications { get; set; }
+        public virtual INotification Notification { get; set; }
         public virtual IGotLogger Logger { get; set; }
 
         protected virtual void SendInfoNotification(string message = "")
         {
-            var notify = Notifications.First(f => f.GetType() == typeof(TelegramNotification));
-            notify.SendMessage(message);
+            Notification.SendMessage(message);
             Logger.AddLog(message);
         }
 
@@ -168,14 +170,15 @@ namespace GOT.Logic.Strategies.Bases
 
         public virtual void SubscribeInstrument(Instrument instrument)
         {
+            if (instrument == null) return;
             Connector?.SubscribeInstrument(instrument);
         }
 
-        protected virtual void SendOrder(Instrument instrument, Directions direction, int volume,
+        protected virtual void SendOrder(Instrument instrument, string account, Directions direction, int volume,
             decimal price = decimal.Zero,
             string description = "")
         {
-            Connector?.SendOrder(Id, instrument, direction, volume, price, description);
+            Connector?.SendOrder(Id, instrument, account, direction, volume, price, description);
         }
 
         protected void CancelOrders()

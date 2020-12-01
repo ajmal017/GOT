@@ -41,7 +41,7 @@ namespace GOT.Logic.Strategies.Bases
         ///     Обновление инструмента в контейнерах
         /// </summary>
         /// <param name="shiftStrikeStep">шаг, на который необходимо сдвинуть страйки инструментов</param>
-        bool UpdateInstruments(decimal shiftStrikeStep);
+        void UpdateInstruments(decimal shiftStrikeStep);
 
         /// <summary>
         ///     Задать имя родительской стратегии
@@ -56,7 +56,8 @@ namespace GOT.Logic.Strategies.Bases
         void SetParentInstrument(Future instrument);
 
         void SetConnector(IConnector connector);
-        void SetNotifications(INotification[] notification);
+        void SetNotification(INotification notification);
         void SetLogger(IGotLogger logger);
+        void SetAccount(string account);
     }
 }

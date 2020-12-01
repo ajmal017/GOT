@@ -74,20 +74,25 @@ namespace GOT.Logic.Strategies.Options
         {
             _containers.ForEach(cont => cont.SetConnector(connector));
         }
+        
+        public void SetAccount(string account)
+        {
+            _containers.ForEach(cont => cont.SetAccount(account));
+        }
 
         public void SetLogger(IGotLogger logger)
         {
             _containers.ForEach(cont => cont.SetLogger(logger));
         }
 
-        public void SetNotifications(INotification[] notification)
+        public void SetNotification(INotification notification)
         {
-            _containers.ForEach(cont => cont.SetNotifications(notification));
+            _containers.ForEach(cont => cont.SetNotification(notification));
         }
 
-        public bool UpdateInstruments(decimal shiftStrikeStep)
+        public void UpdateInstruments(decimal shiftStrikeStep)
         {
-            return _containers.All(c => c.UpdateStrategy(shiftStrikeStep));
+            _containers.ForEach(c => c.UpdateStrategy(shiftStrikeStep));
         }
 
         public void ClearContainers()

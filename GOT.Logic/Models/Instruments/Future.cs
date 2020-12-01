@@ -21,15 +21,17 @@ namespace GOT.Logic.Models.Instruments
             InstrumentType = InstrumentTypes.Futures;
         }
 
-        public Future(Contract contract, string longName = "") : this(contract.ConId)
+        public Future(ContractDetails details) : this(details.Contract.ConId)
         {
+            var contract = details.Contract;
             Exchange = contract.Exchange;
             Currency = contract.Currency;
+            PriceStep = (decimal) details.MinTick;
             FullName = contract.LocalSymbol;
             Code = contract.Symbol;
             Symbol = contract.Symbol;
             Multiplier = decimal.Parse(contract.Multiplier);
-            Description = longName;
+            Description = details.LongName;
             ExpirationDate = DateTime.ParseExact(contract.LastTradeDateOrContractMonth, "yyyyMMdd",
                 CultureInfo.CurrentCulture);
         }

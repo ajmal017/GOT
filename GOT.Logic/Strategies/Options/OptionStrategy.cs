@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models;
 using GOT.Logic.Models.Instruments;
@@ -215,9 +215,13 @@ namespace GOT.Logic.Strategies.Options
 
         public override void Stop()
         {
-            CancelOrders();
+            if (_lastOrder != null && _lastOrder.OrderState == OrderState.Active) {
+                CancelOrders();
+            }
+
             Connector.OptionChanged -= OnInstrumentChanged;
             Connector.OrderChanged -= OnOrderChanged;
+            Connector.UnsubscribeInstrument(Instrument.TickerId);
             base.Stop();
         }
 
@@ -253,7 +257,7 @@ namespace GOT.Logic.Strategies.Options
 
         protected override void OnInstrumentChanged(InstrumentDTO inst)
         {
-            if (Instrument.Id != inst.Id) {
+            if (Instrument.TickerId != inst.Id) {
                 return;
             }
 
@@ -325,7 +329,7 @@ namespace GOT.Logic.Strategies.Options
                         SendOptionOrder(price);
                     } else {
                         _lastOrder = null;
-                        SendInfoNotification($"Strategy {Name}, {Instrument.FullName}. is done!");
+                        SendInfoNotification($"Strategy {Name}, {Instrument.TradingClass}. is done!");
                         StrategyState = StrategyStates.Observe;
                         Connector.OrderChanged -= OnOrderChanged;
                     }
@@ -350,7 +354,7 @@ namespace GOT.Logic.Strategies.Options
             const int minVolume = 1;
             var desc = $"Option | Type: {OptionType} Strike: {Instrument.Strike.ToString()} id:{Id.ToString()}";
             _lastOrder = new Order();
-            SendOrder(Instrument, _currentDirection, minVolume, price, desc);
+            SendOrder(Instrument, Account, _currentDirection, minVolume, price, desc);
         }
 
         #endregion

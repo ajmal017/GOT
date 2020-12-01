@@ -6,7 +6,7 @@
                       xmlns:views="clr-namespace:GOT.UI.Views"
                       mc:Ignorable="d"
                       DataContext="{Binding RelativeSource={RelativeSource Self}}" ResizeMode="NoResize"
-                      Title="Выбор инструмента" Height="440" Width="740" WindowStartupLocation="CenterScreen">
+                      Title="Выбор инструмента" Height="440" Width="780" WindowStartupLocation="CenterScreen">
     <Window.Resources>
 
         <ResourceDictionary>
@@ -71,7 +71,7 @@
                                 <GridViewColumn Header="Дата эскпирации" Width="120"
                                                 DisplayMemberBinding="{Binding ExpirationDate, StringFormat={}{0:dd/MM/yyyy}}" />
                                 <GridViewColumn DisplayMemberBinding="{Binding Description}" Header="Описание"
-                                                Width="140" />
+                                                Width="180" />
 
                             </GridView.Columns>
                         </GridView>

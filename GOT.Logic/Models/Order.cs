@@ -49,5 +49,8 @@ namespace GOT.Logic.Models
 
         [JsonProperty("description")]
         public string Description { get; set; }
+        
+        [JsonProperty("account")]
+        public string Account { get; set; }
     }
 }

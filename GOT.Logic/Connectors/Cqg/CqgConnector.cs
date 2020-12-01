@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using CQG;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models;
 using GOT.Logic.Models.Instruments;
@@ -15,7 +15,10 @@ using GOT.SharedKernel.Enums;
 
 namespace GOT.Logic.Connectors.Cqg
 {
-    public class CqgConnector : IConnector
+    [Obsolete("данный коннектор CQG является устаревшим. " +
+              "В нём описаны методы для работы с их API. " +
+              "Поэтому используйте его только при возобновлении поддержки данного коннектора.")]
+    public class CqgConnector
     {
         private readonly List<Account> _accounts = new List<Account>();
         private readonly List<string> _fullNameCodes = new List<string>();

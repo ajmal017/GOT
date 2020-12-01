@@ -113,7 +113,7 @@ namespace GOT.Logic.Utils
                 StopRestartOffset = baseStrategy.StopRestartOffset,
                 Direction = baseStrategy.Direction,
                 ShiftStepPrice = baseStrategy.ShiftStepPrice,
-                Notifications = baseStrategy.Notifications,
+                Notification = baseStrategy.Notification,
                 Logger = baseStrategy.Logger,
                 Connector = baseStrategy.Connector,
                 Instrument = baseStrategy.Instrument,

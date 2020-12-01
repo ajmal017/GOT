@@ -1,5 +1,3 @@
-using System;
-using System.Globalization;
 using CQG;
 using GOT.Logic.Enums;
 using IBApi;
@@ -15,29 +13,10 @@ namespace GOT.Logic.Models.Instruments
             InstrumentType = InstrumentTypes.Options;
         }
 
-        public Option(int id) : base(id)
+        public Option(int id)
         {
+            TickerId = id;
             InstrumentType = InstrumentTypes.Options;
-        }
-
-        public Option(Contract contract) : this(contract.ConId)
-        {
-            Strike = Convert.ToDecimal(contract.Strike);
-            Currency = contract.Currency;
-            Exchange = contract.Exchange;
-            FullName = contract.LocalSymbol;
-            Code = contract.Symbol;
-            Symbol = contract.Symbol;
-            Multiplier = decimal.Parse(contract.Multiplier);
-            ExpirationDate = DateTime.ParseExact(contract.LastTradeDateOrContractMonth, "yyyyMMdd",
-                CultureInfo.CurrentCulture);
-            MonthNumber = ExpirationDate.Month;
-            OptionType = contract.Right switch
-            {
-                "P" => OptionTypes.Put,
-                "C" => OptionTypes.Call,
-                _ => OptionType
-            };
         }
 
         public Option(CQGInstrument cqgInstrument) : base(cqgInstrument.InstrumentID)
@@ -62,24 +41,22 @@ namespace GOT.Logic.Models.Instruments
 
         [JsonProperty("strike")]
         public decimal Strike { get; set; }
-
-        /// <summary>
-        ///     Номер месяца, от 1 до 12 соответственно.
-        /// </summary>
-        [JsonProperty("monthNumber")]
-        public int MonthNumber { get; set; }
+        
+        [JsonProperty("tradingClass")]
+        public string TradingClass { get; set; }
 
         public override Contract CreateNewIbContract()
         {
             return new Contract
             {
-                ConId = Id,
                 Strike = (double) Strike,
                 Currency = Currency,
                 Exchange = Exchange,
-                LocalSymbol = FullName,
+                TradingClass = TradingClass,
                 Symbol = Symbol,
                 SecType = "FOP",
+                Multiplier = Multiplier.ToString(),
+                LastTradeDateOrContractMonth = ExpirationDate.ToString("yyyyMMdd"),
                 Right = OptionType switch
                 {
                     OptionTypes.Put => "P",
@@ -88,7 +65,7 @@ namespace GOT.Logic.Models.Instruments
                 }
             };
         }
-
+        
         public override string ToString()
         {
             return OptionType + " " + base.ToString();
