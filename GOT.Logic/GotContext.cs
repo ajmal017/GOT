@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using GOT.Logic.Connectors;
-using GOT.Logic.Connectors.Cqg;
 using GOT.Logic.Connectors.InteractiveBrokers;
 using GOT.Logic.Enums;
 using GOT.Logic.Strategies;
@@ -88,7 +87,7 @@ namespace GOT.Logic
 
             newStrategy.Id = Guid.NewGuid();
             newStrategy.Logger = GotLogger;
-            newStrategy.Notifications = new []{EmailNotification, TelegramNotification};
+            newStrategy.Notification = TelegramNotification;
             newStrategy.Connector = Connector;
             MainStrategies.Add(newStrategy);
         }
@@ -98,13 +97,23 @@ namespace GOT.Logic
             return Connector.GetAccounts().Select(s => s.Name);
         }
 
+
         public void Connect()
         {
             Connector.Connect();
-            RequestAllInstruments();
             Connector.RequestMarketDataType(Config.DataType);
+            RequestAllInstruments();
         }
 
+        /// <summary>
+        /// Запрашивает информацию по имеющимся интрументам у биржи. Фьючерс, а затем цепочку опционов по нему.
+        /// </summary>
+        private void RequestAllInstruments()
+        {
+            foreach (var mainStrategy in MainStrategies) {
+                Connector.RequestInstrument(mainStrategy.Instrument.Code);
+            }
+        }
         public void Disconnect()
         {
             Connector.Disconnect();
@@ -152,7 +161,6 @@ namespace GOT.Logic
             try {
                 Connector = config.ConnectorType switch
                 {
-                    ConnectorTypes.CQG => new CqgConnector(gotLogger),
                     ConnectorTypes.IB => new IbConnector(gotLogger, TelegramNotification, config),
                     _ => throw new Exception("error connector type")
                 };
@@ -173,7 +181,7 @@ namespace GOT.Logic
                         if (s.Logger == null) {
                             s.Connector = Connector;
                             s.Logger = GotLogger;
-                            s.Notifications = new []{EmailNotification, TelegramNotification};
+                            s.Notification = TelegramNotification;
                         }
                     });
                     break;
@@ -186,18 +194,6 @@ namespace GOT.Logic
             }
 
             NewConnectionStates?.Invoke(state);
-        }
-
-        /// <summary>
-        /// Запрашивает информацию по указанным инструментам у биржи.
-        /// Необходимо для таких функций как добавление инструментов фьючерс, опцион, а также автоперезахода.
-        /// </summary>
-        private void RequestAllInstruments()
-        {
-            foreach (var mainStrategy in MainStrategies) {
-                Connector.RequestInstrument(mainStrategy.Instrument.Code, InstrumentTypes.Futures);    
-                Connector.RequestInstrument(mainStrategy.Instrument.Code, InstrumentTypes.Options);    
-            }
         }
 
         private void OnGatewayStateChanged(ConnectionStates state)

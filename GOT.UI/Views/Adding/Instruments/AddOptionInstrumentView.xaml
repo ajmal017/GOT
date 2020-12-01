@@ -3,10 +3,9 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:fa="http://schemas.fontawesome.io/icons/"
                       xmlns:views="clr-namespace:GOT.UI.Views"
                       mc:Ignorable="d"
-                      DataContext="{Binding RelativeSource={RelativeSource Self}}" ResizeMode="NoResize"
+                      DataContext="{Binding RelativeSource={RelativeSource Self}}"
                       Title="Выбор опциона" Height="400" Width="600" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
@@ -25,10 +24,10 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <DockPanel>
+            <DockPanel HorizontalAlignment="Center">
                 <TextBlock x:Name="CodeBaseInstrumentTextBox" TextDecorations="Underline" Width="80"
                            HorizontalAlignment="Center" TextAlignment="Center"
-                           VerticalAlignment="Center" Opacity="0.6" Margin="35,5"
+                           VerticalAlignment="Bottom" Opacity="0.6" Margin="35,10"
                            Foreground="{StaticResource HeaderLabelColor}" />
                 <StackPanel Orientation="Vertical" Margin="20,0,25,0">
                     <TextBlock Text="Дата экспирации:" FontSize="14"
@@ -39,15 +38,9 @@
                               ItemStringFormat="dd.MM.yyyy" ToolTip="Дата экспирации"
                               Style="{StaticResource CardsComboBox}" />
                 </StackPanel>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="Фильтр инструментов:" FontSize="14" HorizontalAlignment="Center"
-                               Style="{StaticResource SettingsChildCardsTextBlock}" />
-                    <TextBox x:Name="SearchTextBox" Width="100" Margin="20,6" BorderThickness="1.3" Height="22"
-                             Text="{Binding InstrumentSearchPattern, UpdateSourceTrigger=PropertyChanged}"
-                             BorderBrush="{StaticResource SecondaryColor}" />
-                </StackPanel>
-                <ComboBox Padding="5,3" Margin="25, 15, 0, 0" VerticalAlignment="Center" Width="50" SelectedIndex="0"
-                          ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.OptionTypes}"
+                
+                <ComboBox Padding="5,3" Margin="25, 15, 0, 0" VerticalAlignment="Center" Width="80" SelectedIndex="0"
+                          ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.OptionTypeList}"
                           SelectedItem="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.SelectedOptionType}"
                           Style="{StaticResource CardsComboBox}" />
             </DockPanel>
@@ -60,7 +53,7 @@
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
-                                <GridViewColumn DisplayMemberBinding="{Binding FullName}" Header="Локал. символ"
+                                <GridViewColumn DisplayMemberBinding="{Binding TradingClass}" Header="Локал. символ"
                                                 Width="180" />
                                 <GridViewColumn DisplayMemberBinding="{Binding Strike}" Header="Страйк" Width="100" />
                                 <GridViewColumn DisplayMemberBinding="{Binding Exchange}" Header="Биржа" Width="100" />
@@ -72,18 +65,7 @@
                     </ListView.View>
                 </ListView>
             </DockPanel>
-
-            <TextBlock Grid.Row="1" Name="ErrorTextBlock" Visibility="Collapsed" Text="Ошибка при загрузке."
-                       TextAlignment="Center" Grid.RowSpan="2"
-                       FontSize="14" TextWrapping="Wrap" Margin="160,120,110,120" />
-
             <DockPanel Grid.Row="2">
-                <Button Content="Load" Width="58" Height="30" Margin="60,0" Style="{StaticResource DialogButton}"
-                        Command="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.LoadInstrumentsCommand}">
-                    <Button.Effect>
-                        <DropShadowEffect ShadowDepth="3" Color="{StaticResource RectangleShadowColor}" />
-                    </Button.Effect>
-                </Button>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Select" Width="58" Height="30" Margin="5"
                             Style="{StaticResource DialogButton}"
@@ -101,9 +83,6 @@
                     </Button>
                 </StackPanel>
             </DockPanel>
-            <fa:ImageAwesome x:Name="Spinner" Icon="CircleOutlineNotch" Foreground="{StaticResource SecondaryColor}"
-                             Spin="True" Margin="90,110,90,130" Grid.Row="1" Visibility="Collapsed" />
-
         </Grid>
     </Border>
 </views:FrameWindow>

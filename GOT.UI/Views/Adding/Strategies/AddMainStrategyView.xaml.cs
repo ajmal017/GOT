@@ -61,7 +61,7 @@ namespace GOT.UI.Views.Adding.Strategy
                 var instrument = new AddInstrument(_context.Connector);
                 if (instrument.ShowDialog().Value) {
                     _currentInstrument = instrument.SelectedInstrument;
-                    InstrumentName = _currentInstrument.FullName;
+                    InstrumentName = _currentInstrument.Code;
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace GOT.UI.Views.Adding.Strategy
                 Name = name,
                 Account = account,
                 Connector = _context.Connector,
-                Notifications = new []{_context.EmailNotification, _context.TelegramNotification},
+                Notification = _context.TelegramNotification,
                 Logger = _context.GotLogger,
                 CreatingDate = DateTime.Now,
                 Instrument = instrument,

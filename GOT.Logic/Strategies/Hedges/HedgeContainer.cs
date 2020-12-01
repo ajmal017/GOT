@@ -51,16 +51,22 @@ namespace GOT.Logic.Strategies.Hedges
             Strategies.ForEach(s => s.Name = $"parent: {ParentStrategyName}, container:{Name} ");
         }
 
+        public override void SetAccount(string account)
+        {
+            Account = account;
+            Strategies.ForEach(s => s.Account = account);
+        }
+
         public override void SetConnector(IConnector connector)
         {
             Connector = connector;
             Strategies.ForEach(s => s.Connector = Connector);
         }
 
-        public override void SetNotifications(INotification[] notification)
+        public override void SetNotification(INotification notification)
         {
-            GotNotifications = notification;
-            Strategies.ForEach(s => s.Notifications = notification);
+            GotNotification = notification;
+            Strategies.ForEach(s => s.Notification = notification);
         }
 
         public override void SetLogger(IGotLogger logger)
@@ -76,7 +82,8 @@ namespace GOT.Logic.Strategies.Hedges
             var strategy = new HedgeStrategy(name)
             {
                 Connector = Connector,
-                Notifications = GotNotifications,
+                Notification = GotNotification,
+                Account = Account,
                 Logger = Logger,
                 Instrument = newInstrument,
                 Direction = direction,
@@ -204,17 +211,16 @@ namespace GOT.Logic.Strategies.Hedges
             }
         }
 
+
         /// <summary>
         ///     Сдвинуть дочерние стратегии.
         /// </summary>
         /// <param name="step">Шаг для сдвига.</param>
-        public bool ShiftChildStrategies(decimal step)
+        public void ShiftChildStrategies(decimal step)
         {
             if (step != 0) {
                 Strategies.ForEach(s => s.ActivatePrice += step);
             }
-
-            return true;
         }
 
         /// <summary>

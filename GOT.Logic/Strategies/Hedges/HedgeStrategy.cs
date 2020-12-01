@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models;
 using GOT.Logic.Models.Instruments;
@@ -125,7 +125,7 @@ namespace GOT.Logic.Strategies.Hedges
             var volume = Math.Abs(Position);
             var description = $"Close Position | level: {Level}. {Id.ToString()}";
 
-            SendOrder(Instrument, newDirection, volume, description: description);
+            SendOrder(Instrument, Account, newDirection, volume, description: description);
         }
 
         public bool CanStartRubicon(int volume)
@@ -560,7 +560,7 @@ namespace GOT.Logic.Strategies.Hedges
                 case Directions.Sell:
                 {
                     if (lastPrice <= ActivatePrice && volume < 0) {
-                        SendOrder(Instrument, Directions.Sell, Math.Abs(volume), price, description);
+                        SendOrder(Instrument, Account, Directions.Sell, Math.Abs(volume), price, description);
                     }
 
                     break;
@@ -568,7 +568,7 @@ namespace GOT.Logic.Strategies.Hedges
                 case Directions.Buy:
                 {
                     if (lastPrice >= ActivatePrice && volume > 0) {
-                        SendOrder(Instrument, Directions.Buy, volume, price, description);
+                        SendOrder(Instrument, Account, Directions.Buy, volume, price, description);
                     }
 
                     break;
@@ -592,7 +592,7 @@ namespace GOT.Logic.Strategies.Hedges
                     }
 
                     if (volume > 0 && lastPrice >= AntiStopPrice) {
-                        SendOrder(Instrument, Directions.Buy, volume, price, description);
+                        SendOrder(Instrument, Account, Directions.Buy, volume, price, description);
                     }
 
                     break;
@@ -605,7 +605,7 @@ namespace GOT.Logic.Strategies.Hedges
                     }
 
                     if (volume < 0 && lastPrice <= AntiStopPrice) {
-                        SendOrder(Instrument, Directions.Sell, Math.Abs(volume), price, description);
+                        SendOrder(Instrument, Account, Directions.Sell, Math.Abs(volume), price, description);
                     }
 
                     break;
@@ -621,12 +621,12 @@ namespace GOT.Logic.Strategies.Hedges
             }
         }
 
-        protected override void SendOrder(Instrument instrument, Directions direction, int volume,
+        protected override void SendOrder(Instrument instrument, string account, Directions direction, int volume,
             decimal price = decimal.Zero,
             string description = "")
         {
             Container.HasActiveStrategy = true;
-            base.SendOrder(instrument, direction, volume, price, description);
+            base.SendOrder(instrument, account, direction, volume, price, description);
         }
 
         #endregion

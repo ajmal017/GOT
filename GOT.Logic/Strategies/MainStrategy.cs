@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 using GOT.Logic.Connectors;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models.Instruments;
 using GOT.Logic.Strategies.Bases;
@@ -26,7 +28,7 @@ namespace GOT.Logic.Strategies
 
         private string _name;
 
-        private INotification[] _notifications;
+        private INotification _notification;
 
         public MainStrategy()
         {
@@ -45,14 +47,14 @@ namespace GOT.Logic.Strategies
             }
         }
 
-        public override INotification[] Notifications
+        public override INotification Notification
         {
-            get => _notifications;
+            get => _notification;
             set
             {
-                _notifications = value;
-                OptionHolder.SetNotifications(_notifications);
-                HedgeHolder.SetNotifications(_notifications);
+                _notification = value;
+                OptionHolder.SetNotification(_notification);
+                HedgeHolder.SetNotification(_notification);
             }
         }
 
@@ -98,29 +100,39 @@ namespace GOT.Logic.Strategies
             return isOptionExists || isHedgeExists;
         }
 
+        
         protected override void OnInstrumentChanged(InstrumentDTO inst)
         {
-            if (inst.Id != Instrument.Id) {
+            if (Instrument.Id != inst.Id) {
+                return;
+            }
+            RefreshAll();
+
+            if (inst.LastPrice != 0) {
+                Instrument.LastPrice = inst.LastPrice;
+            }
+
+            if (ClosingState == ClosingState.Reenter) {
+                var position = Math.Abs(OptionHolder.PositionContainers) + Math.Abs(HedgeHolder.PositionContainers);
+                if (position == 0) {
+                    OnCloseAllPositions();
+                }
+
                 return;
             }
 
-            Instrument.LastPrice = inst.LastPrice;
-            RefreshAll();
-            // if (ClosingState == ClosingState.Reenter || PnlPercent < PercentAutoClosing) {
-                // return;
-            // }
+            if (PnlPercent < PercentAutoClosing) {
+                return;
+            }
 
-//TODO 20 ноября 2020 г.: придумать как сделать кнопку перезахода корректной, на данный момент при ручном старте автоперезахода,
-//TODO 20 ноября 2020 г.: берется последняя цена инструмента, а она равна 0. либо присвоение вынести до проверки на reenter, либо что-то еще.
-            // if (inst.LastPrice == 0) {
-            //     return;
-            // }
-            //
-            // Instrument.LastPrice = inst.LastPrice;
-            // var isTimeToAutoClose = OptionHolder.CheckToAutoClose(Instrument.LastPrice, AutoClosingShift);
-            // if (isTimeToAutoClose) {
-            //     SetClosingState(ClosingState.Reenter);
-            // }
+            if (Instrument.LastPrice == 0) {
+                return;
+            }
+
+            var isTimeToAutoClose = OptionHolder.CheckToAutoClose(Instrument.LastPrice, AutoClosingShift);
+            if (isTimeToAutoClose) {
+                SetClosingState(ClosingState.Reenter);
+            }
         }
 
         private void RefreshAll()
@@ -132,7 +144,6 @@ namespace GOT.Logic.Strategies
             OnPropertyChanged("PnlOptionCurrency");
             OnPropertyChanged("PnlHedgeCurrency");
             OnPropertyChanged("PnlCurrency");
-            // OnPropertyChanged("Position");
             OnPropertyChanged("OptionHolder");
             OnPropertyChanged("HedgeHolder");
             OnPropertyChanged("MainOptions");
@@ -155,8 +166,19 @@ namespace GOT.Logic.Strategies
 
         #region properties
 
+        private string _account;
+
         [JsonProperty("account")]
-        public string Account { get; set; }
+        public override string Account
+        {
+            get => _account;
+            set
+            {
+                _account = value;
+                OptionHolder.SetAccount(_account);
+                HedgeHolder.SetAccount(_account);
+            }
+        }
 
         [JsonProperty("autoRestartCounter")]
         public int AutoRestartCounter { get; set; }
@@ -224,7 +246,7 @@ namespace GOT.Logic.Strategies
                 _hedgeHolder = value;
                 _hedgeHolder.SetConnector(Connector);
                 _hedgeHolder.SetLogger(Logger);
-                _hedgeHolder.SetNotifications(Notifications);
+                _hedgeHolder.SetNotification(Notification);
                 _hedgeHolder.SetParentInstrument(Instrument);
                 OnPropertyChanged();
             }
@@ -252,11 +274,10 @@ namespace GOT.Logic.Strategies
                 case ClosingState.Manual:
                     ClosePositions();
                     break;
-                //раскомментить, когда будет готова функция автоперезахода
-                // case ClosingState.Reenter:
-                //     StartReenter();
-                //     ClosePositions();
-                //     break;
+                case ClosingState.Reenter:
+                    StartReenter();
+                    ClosePositions();
+                    break;
             }
         }
 
@@ -289,16 +310,6 @@ namespace GOT.Logic.Strategies
         ///     Параметр для отображения процента (в %)
         /// </summary>
         public decimal PnlPercent => Math.Round(CostOptionPosition == 0 ? 0 : Pnl * 100 / CostOptionPosition);
-        //
-        // public override int Position
-        // {
-        //     get
-        //     {
-        //         var position = Math.Abs(OptionHolder.PositionContainers) + Math.Abs(HedgeHolder.PositionContainers);
-        //         PositionChanged?.Invoke(position);
-        //         return position;
-        //     }
-        // }
 
         #endregion
 
@@ -379,38 +390,32 @@ namespace GOT.Logic.Strategies
             AutoRestartCounter++;
 
             SendInfoNotification($"Strategy: {Name}. Auto-restart! Count: {AutoRestartCounter.ToString()}");
-            PositionChanged += OnPositionChanged;
         }
 
-        private event Action<int> PositionChanged = delegate { };
-
-        private void OnPositionChanged(int pos)
+        private void OnCloseAllPositions()
         {
-            if (pos == 0) {
-                var shiftStrikeStep = OptionHolder.GetShiftStrikeStep(Instrument.LastPrice);
-                var updateOptions = OptionHolder.UpdateInstruments(shiftStrikeStep);
-                var updateHedges = HedgeHolder.UpdateInstruments(shiftStrikeStep);
-                if (updateHedges && updateOptions) {
-                    var resetAllContainers = HedgeHolder.ResetAllContainers();
-                    if (resetAllContainers) {
-                        StartAfterReenter();
-                    }
+            var shiftStrikeStep = OptionHolder.GetShiftStrikeStep(Instrument.LastPrice);
+            Dispatcher?.Invoke(() =>
+            {
+                OptionHolder.UpdateInstruments(shiftStrikeStep);
+                HedgeHolder.UpdateInstruments(shiftStrikeStep);
+                if (HedgeHolder.ResetAllContainers()) {
+                    StartAfterReenter();
                 }
-            }
+            }, DispatcherPriority.Normal, CancellationToken.None);
         }
 
         private void StartAfterReenter()
         {
             ClosingState = ClosingState.None;
-            PositionChanged -= OnPositionChanged;
             StartHolders();
         }
+
+        #endregion
 
         public override string ToString()
         {
             return Name + " " + Instrument?.FullName;
         }
-
-        #endregion
     }
 }

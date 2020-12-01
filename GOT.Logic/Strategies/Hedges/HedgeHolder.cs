@@ -51,15 +51,20 @@ namespace GOT.Logic.Strategies.Hedges
         {
             _containers.ForEach(cont => cont.ClosePositions());
         }
-
-        public bool UpdateInstruments(decimal shiftStrikeStep)
+        
+        public void UpdateInstruments(decimal shiftStrikeStep)
         {
-            return _containers.All(cont => cont.ShiftChildStrategies(shiftStrikeStep));
+            _containers.ForEach(cont => cont.ShiftChildStrategies(shiftStrikeStep));
         }
-
+        
         public bool ExistsStrategies()
         {
             return _containers.Any(cont => cont.IsNotEmpty());
+        }
+
+        public void SetAccount(string account)
+        {
+            _containers.ForEach(cont => cont.SetAccount(account));
         }
 
         public void SetConnector(IConnector connector)
@@ -72,9 +77,9 @@ namespace GOT.Logic.Strategies.Hedges
             _containers.ForEach(cont => cont.SetLogger(logger));
         }
 
-        public void SetNotifications(INotification[] notification)
+        public void SetNotification(INotification notification)
         {
-            _containers.ForEach(cont => cont.SetNotifications(notification));
+            _containers.ForEach(cont => cont.SetNotification(notification));
         }
 
         public void SetParentName(string parentName)

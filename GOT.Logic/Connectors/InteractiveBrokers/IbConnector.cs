@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models;
 using GOT.Logic.Models.Instruments;
@@ -21,6 +22,7 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
     public class IbConnector : DefaultEWrapper, IConnector
     {
         private readonly IList<Instrument> _cacheInstruments = new List<Instrument>();
+        private readonly Dictionary<int, List<Option>> _cacheOptionsChain = new Dictionary<int, List<Option>>();
         private readonly IbCodeHandler _codeHandler = new IbCodeHandler();
         private readonly IGotLogger _logger;
         private readonly INotification _notification;
@@ -28,7 +30,7 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
         private IConfiguration _configuration;
 
         /// <summary>
-        ///     Следующий id запроса. Не влияет на работу, необходим только для отправки нового запроса.
+        /// Ticketid запроса на данные по опциону. Необходима для уникальности запросов к tws.
         /// </summary>
         private int _nextRequestId;
 
@@ -99,37 +101,16 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
             }
 
             ClientSocket.cancelMktData(instrument.Id);
-            _cacheInstruments.Remove(instrument);
+            _cacheOptionsChain.Remove(instrument.Id);
         }
 
-        public IReadOnlyList<Option> GetOptions(string baseInstrumentCode, string exchange = "")
+        public IEnumerable<Option> GetOptions(Future baseInstrument)
         {
-            IReadOnlyList<Option> cache = _cacheInstruments.Where(instr =>
-                                                               instr.InstrumentType == InstrumentTypes.Options &&
-                                                               instr.Exchange == exchange &&
-                                                               instr.Symbol == baseInstrumentCode)
-                                                           .Select(instr => instr as Option).ToList();
-            return cache;
-        }
-
-        public Task<IReadOnlyList<Option>> GetOptionsAsync(string baseInstrumentCode, string exchange = "")
-        {
-            var cache = GetOptions(baseInstrumentCode, exchange);
-            if (cache.Any()) {
-                return Task.FromResult(cache);
+            if (_cacheOptionsChain.ContainsKey(baseInstrument.Id)) {
+                return _cacheOptionsChain[baseInstrument.Id];
             }
 
-            var taskSource = new TaskCompletionSource<IReadOnlyList<Option>>();
-            RequestEnded += _ =>
-            {
-                var options = GetOptions(baseInstrumentCode, exchange);
-                taskSource.TrySetResult(options);
-            };
-
-            var token = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            token.Token.Register(() => taskSource.TrySetCanceled());
-            RequestInstrument(baseInstrumentCode, InstrumentTypes.Options);
-            return taskSource.Task;
+            return new List<Option>();
         }
 
         public Task<IReadOnlyList<Future>> GetFuturesAsync(string instrumentSymbol)
@@ -148,13 +129,8 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
 
             var token = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             token.Token.Register(() => taskSource.TrySetCanceled());
-            RequestInstrument(instrumentSymbol, InstrumentTypes.Futures);
+            RequestInstrument(instrumentSymbol);
             return taskSource.Task;
-        }
-
-        public IEnumerable<string> GetInstrumentCodes()
-        {
-            return new List<string> {"GE", "TN", "ES", "KE", "ZN", "ZC", "NG", "GC", "EUR", "GBP", "JPY", "ZF"};
         }
 
         private IReadOnlyList<Future> GetFutures(string instrumentSymbol)
@@ -166,10 +142,12 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
             return cache;
         }
 
-        public void UpdateConfig(IConfiguration configuration)
+        public IEnumerable<string> GetInstrumentCodes()
         {
-            _configuration = configuration;
+            return new List<string> {"GE", "TN", "ES", "KE", "ZN", "ZC", "NG", "GC", "EUR", "GBP", "JPY", "ZF"};
         }
+
+        public void UpdateConfig(IConfiguration configuration) => _configuration = configuration;
 
         private event Action<int> RequestEnded;
 
@@ -192,18 +170,16 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
         /// The security's type: STK - stock (or ETF) OPT - option FUT - future IND - index FOP - futures option
         /// Ответ на запрос см.
         /// <see cref="contractDetails" />
-        public void RequestInstrument(string instrumentCode, InstrumentTypes type)
+        public void RequestInstrument(string instrumentCode)
         {
-            var secType = type switch
-            {
-                InstrumentTypes.Futures => "FUT",
-                InstrumentTypes.Options => "FOP",
-                _ => string.Empty
-            };
-            var contract = new Contract {Symbol = instrumentCode, SecType = secType};
-
+            var contract = new Contract {Symbol = instrumentCode, SecType = "FUT"};
             ClientSocket.reqContractDetails(_nextRequestId++, contract);
         }
+
+        /// <summary>
+        /// Для фильтрации добавлен список бирж, чтобы отсеить лишние данные для кэша.
+        /// </summary>
+        private IEnumerable<string> Exchanges => new[] {"CBOE", "CBOE2", "ECBOT", "GLOBEX", "GEMINI", "NYBOT", "NYMEX"};
 
         /// <summary>
         ///     Oтвет на запрос <see cref="RequestInstrument" />
@@ -213,14 +189,45 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
         public override void contractDetails(int reqId, ContractDetails contractDetails)
         {
             var contract = contractDetails.Contract;
+            var isValidExchange = Exchanges.Any(exchange => exchange.Contains(contract.Exchange));
 
-            Instrument instrument = contract.SecType switch
-            {
-                "FUT" => new Future(contract, contractDetails.LongName) {PriceStep = (decimal) contractDetails.MinTick},
-                "FOP" => new Option(contract) {PriceStep = (decimal) contractDetails.MinTick},
-                _ => null
-            };
-            _cacheInstruments.Add(instrument);
+            if (contract.SecType.Equals("FUT") && isValidExchange) {
+                Instrument instrument = new Future(contractDetails) {TickerId = reqId};
+                _cacheInstruments.Add(instrument);
+                if (!_cacheOptionsChain.ContainsKey(instrument.Id)) {
+                    _cacheOptionsChain.Add(instrument.Id, new List<Option>());
+                    RequestOptionsInstrument(instrument);
+                }
+            }
+        }
+
+        private void RequestOptionsInstrument(Instrument baseInst)
+        {
+            ClientSocket.reqSecDefOptParams(_nextRequestId++, baseInst.Symbol, baseInst.Exchange, "FUT", baseInst.Id);
+        }
+
+        /// <summary>
+        /// Начальное значение для TicketId опционов. Необходима для проверки соответствия инструмента внутри стратегии.
+        /// </summary>
+        private int _optionId = 100000;
+
+        public override void securityDefinitionOptionParameter(int reqId, string exchange, int underlyingConId,
+            string tradingClass,
+            string multiplier, HashSet<string> expirations, HashSet<double> strikes)
+        {
+            foreach (var strike in strikes) {
+                var nextOptionId = _nextOrderId + _optionId++;
+                var option = new Option(nextOptionId)
+                {
+                    TickerId = nextOptionId,
+                    TradingClass = tradingClass,
+                    Multiplier = Convert.ToDecimal(multiplier),
+                    Strike = Convert.ToDecimal(strike),
+                    Exchange = exchange,
+                    ExpirationDate = DateTime.ParseExact(expirations.First(), "yyyyMMdd", CultureInfo.CurrentCulture)
+                };
+                _cacheOptionsChain[underlyingConId].Add(option);
+            }
         }
 
         public override void contractDetailsEnd(int reqId)
@@ -258,18 +265,13 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
         /// </summary>
         /// <param name="instrument">
         ///     Инструмент на который необходимо подписаться.
-        ///     (ВАЖНО! В целях избежания путаницы с инструментами использовать FullName (или LocalSymbol у Contract))
         /// </param>
         public void SubscribeInstrument(Instrument instrument)
         {
             try {
-                if (instrument == null || string.IsNullOrEmpty(instrument.FullName)) {
-                    return;
-                }
-
                 var contract = instrument.CreateNewIbContract();
-
-                ClientSocket.reqMktData(contract.ConId, contract, "", false, false, null);
+                var newId = instrument.InstrumentType == InstrumentTypes.Futures ? instrument.Id : instrument.TickerId;
+                ClientSocket.reqMktData(newId, contract, "", false, false, null);
             }
             catch (Exception e) {
                 _logger.AddLog(e.Message, 2);
@@ -280,7 +282,7 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
         ///     Отписка от инструмента.
         /// </summary>
         /// <param name="id">id инструмента, по которому необходимо отменить подписку.</param>
-        public void DescribeInstrument(int id)
+        public void UnsubscribeInstrument(int id)
         {
             if (id == 0) {
                 return;
@@ -289,18 +291,6 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
             ClientSocket.cancelMktData(id);
         }
 
-        /// <summary>
-        ///     Запрос на тип рыночных данных. Необходимо указать перед использованием <see cref="SubscribeInstrument" />
-        ///     ClientSocket.reqMktData();
-        /// </summary>
-        /// <param name="type">
-        ///     тип рыночных данных
-        ///     1 - Live (Текущие рыночные данные, предоставляются по подписке)
-        ///     2 - Frozen (Данные замороженного рынка - это последние данные, записанные при закрытии рынка)
-        ///     3 - Delayed (Бесплатные данные с задержкой - 15–20 минут.)
-        ///     4 - Delayed Frozen (Запросы задержанных «замороженных» данных для пользователя без подписки на рыночные данные)
-        /// </param>
-        /// <remarks>https://interactivebrokers.github.io/tws-api/market_data_type.html</remarks>
         public void RequestMarketDataType(int type)
         {
             ClientSocket.reqMarketDataType(type);
@@ -320,7 +310,7 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
 
         private readonly List<Order> _orders = new List<Order>();
 
-        public void SendOrder<T>(Guid strategyId, T instrument, Directions direction, int volume,
+        public void SendOrder<T>(Guid strategyId, T instrument, string account, Directions direction, int volume,
             decimal price = 0M, string description = "")
             where T : Instrument
         {
@@ -329,6 +319,7 @@ namespace GOT.Logic.Connectors.InteractiveBrokers
                 StrategyId = strategyId,
                 Direction = direction,
                 Volume = Math.Abs(volume),
+                Account = account,
                 Price = price,
                 Instrument = instrument,
                 Description = description,

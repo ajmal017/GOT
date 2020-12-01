@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 using GOT.Logic.Enums;
 using GOT.Logic.Models;
 using GOT.Logic.Models.Instruments;
@@ -47,14 +47,17 @@ namespace GOT.Logic.Connectors
         void RemoveInstrument(Instrument instrument);
 
         /// <summary>
-        ///     Получить список доступных опцион-инструментов.
+        /// Сделать запрос информации по базовому инструменту.
         /// </summary>
-        /// <param name="baseInstrumentCode">Код базового инструмента</param>
-        /// <param name="exchange">Биржа базового инструмента</param>
+        /// <param name="instrumentCode"></param>
+        void RequestInstrument(string instrumentCode);
+
+        /// <summary>
+        ///     Получить цепочку доступных опцион-инструментов.
+        /// </summary>
+        /// <param name="baseInstrument">базовый инструмент</param>
         /// <returns></returns>
-        IReadOnlyList<Option> GetOptions(string baseInstrumentCode, string exchange = "");
-        Task<IReadOnlyList<Option>> GetOptionsAsync(string baseInstrumentCode, string exchange = "");
-        void RequestInstrument(string instrumentCode, InstrumentTypes type);
+        IEnumerable<Option> GetOptions(Future baseInstrument);
 
         /// <summary>
         ///     Получить список доступных фьючерс-инструментов
@@ -63,6 +66,10 @@ namespace GOT.Logic.Connectors
         /// <returns></returns>
         Task<IReadOnlyList<Future>> GetFuturesAsync(string instrumentSymbol);
 
+        /// <summary>
+        /// Получить список кодов доступных инструментов
+        /// </summary>
+        /// <returns></returns>
         IEnumerable<string> GetInstrumentCodes();
 
         /// <summary>
@@ -70,29 +77,44 @@ namespace GOT.Logic.Connectors
         /// </summary>
         IEnumerable<Account> GetAccounts();
 
-        void RequestMarketDataType(int type);
         /// <summary>
-        ///     Подписывается на данные по инструменту
+        ///     Запрос на тип рыночных данных. Необходимо указать перед использованием <see cref="SubscribeInstrument" />
+        ///     ClientSocket.reqMktData();
         /// </summary>
-        /// <param name="instrument">Инструмент.</param>
+        /// <param name="type">
+        ///     тип рыночных данных
+        ///     1 - Live (Текущие рыночные данные, предоставляются по подписке)
+        ///     2 - Frozen (Данные замороженного рынка - это последние данные, записанные при закрытии рынка)
+        ///     3 - Delayed (Бесплатные данные с задержкой - 15–20 минут.)
+        ///     4 - Delayed Frozen (Запросы задержанных «замороженных» данных для пользователя без подписки на рыночные данные)
+        /// </param>
+        /// <remarks>https://interactivebrokers.github.io/tws-api/market_data_type.html</remarks>
+        void RequestMarketDataType(int type);
+       
+        /// <summary>
+        ///     Подписка на данные по инструменту. используется вместе с <see cref="RequestMarketDataType" />.
+        /// </summary>
+        /// <param name="instrument">Инструмент на который необходимо подписаться.</param>
         void SubscribeInstrument(Instrument instrument);
 
         /// <summary>
         ///     Отписывается от данных по инструменту
         /// </summary>
         /// <param name="id">id инструмента</param>
-        void DescribeInstrument(int id);
+        void UnsubscribeInstrument(int id);
 
         /// <summary>
         ///     Создает заявку и отправляет на биржу
         /// </summary>
         /// <param name="strategyId"></param>
         /// <param name="instrument">Инструмент <see cref="Future" />,<see cref="Option" /></param>
+        /// <param name="account">Account <see cref="Account" /></param>
         /// <param name="direction">Направление заявки</param>
         /// <param name="volume">Объем заявки</param>
         /// <param name="price">Цена заявки</param>
         /// <param name="description">Описание заявки</param>
-        void SendOrder<T>(Guid strategyId, T instrument, Directions direction, int volume, decimal price = decimal.Zero,
+        void SendOrder<T>(Guid strategyId, T instrument, string account, Directions direction, int volume,
+            decimal price = decimal.Zero,
             string description = "")
             where T : Instrument;
 

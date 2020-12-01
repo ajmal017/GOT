@@ -4,6 +4,7 @@ using GOT.Logic.Enums;
 using GOT.Logic.Strategies.Options;
 using GOT.SharedKernel.Enums;
 using GOT.UI.Common;
+using GOT.UI.Views.Adding.Strategies;
 using GOT.UI.Views.Adding.Strategy;
 using GOT.UI.Views.SettingsViews;
 

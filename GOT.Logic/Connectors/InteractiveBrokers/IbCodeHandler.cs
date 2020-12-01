@@ -1,5 +1,5 @@
 using System;
-using GOT.Logic.DataTransferObjects;
+using GOT.Logic.DTO;
 
 namespace GOT.Logic.Connectors.InteractiveBrokers
 {
