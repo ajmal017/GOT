@@ -181,9 +181,11 @@ namespace GOT.UI.ViewModels
                     }
 
                     var connectorType = _context.Connector.ConnectorType.ToString();
+
+                    var strategyForDelete = SelectedStrategy;
                     _context.Loader.SaveToDeleteFolder(connectorType, SelectedStrategy.Name);
-                    _context.MainStrategies.Remove(SelectedStrategy);
-                    _childWindows.Remove(SelectedStrategy.Id);
+                    _context.MainStrategies.Remove(strategyForDelete);
+                    _childWindows.Remove(strategyForDelete.Id);
                 }
             }
             catch {
@@ -219,7 +221,9 @@ namespace GOT.UI.ViewModels
         {
             var isConnection = _context.Connector?.ConnectionState != ConnectionStates.Disconnected;
             var isStopStrategy = SelectedStrategy?.StrategyState == StrategyStates.Stopped;
-            return isStopStrategy && isConnection;
+            return _context.Connector != null &&
+                SelectedStrategy != null &&
+                isStopStrategy && isConnection;
         }
 
         /// <summary>
