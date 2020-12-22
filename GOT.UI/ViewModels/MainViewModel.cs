@@ -183,6 +183,7 @@ namespace GOT.UI.ViewModels
                     var connectorType = _context.Connector.ConnectorType.ToString();
 
                     var strategyForDelete = SelectedStrategy;
+
                     _context.Loader.SaveToDeleteFolder(connectorType, SelectedStrategy.Name);
                     _context.MainStrategies.Remove(strategyForDelete);
                     _childWindows.Remove(strategyForDelete.Id);

@@ -84,10 +84,13 @@ namespace GOT.Logic.Strategies.Hedges
         private void SetStartLogic()
         {
             Container.HasActiveStrategy = false;
-            if (Position != 0 && !IsRubiconStrategy) {
+            if (Position != 0 && !IsRubiconStrategy) 
+            {
                 LogicType = StopLogicType.AntiStop;
                 SetWithoutLossPrice();
-            } else {
+            } 
+            else if (LogicType != StopLogicType.RestartStop)
+            {
                 LogicType = StopLogicType.Stop;
             }
         }
