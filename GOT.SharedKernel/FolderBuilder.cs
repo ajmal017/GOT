@@ -11,7 +11,7 @@ namespace GOT.SharedKernel
         private const string CONFIG_FILE_NAME = "GOT_config.json";
         private const string LOGS_FOLDER_NAME = "Logs";
         private const string DELETED_STRATEGY_FOLDER_NAME = "Deleted strategies";
-        private const string STRATEGIES_FOLDER_NAME = "Strategies";
+        private const string STRATEGIES_FOLDER_NAME = "Strategies_m";
         private const string GET_APP_NAME = "BFF";
 
         /// <summary>
